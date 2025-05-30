@@ -14,7 +14,7 @@ type FishData = {
 const fishData: FishData[] = [
   {
     id: 1,
-    name: 'Kingfish (Kanaad)',
+    name: 'Kingfish ',
     image: 'https://masskaronline.com/uploads/images/items/Cat%20Fish.jpg',
     pricePerKg: 45,
     minWeight: 1.5,
@@ -23,7 +23,7 @@ const fishData: FishData[] = [
   },
   {
     id: 2,
-    name: 'Hamour (Orange)',
+    name: 'Hamour ',
     image: 'https://masskaronline.com/uploads/images/items/Naiser.jpg',
     pricePerKg: 60,
     minWeight: 2,
@@ -32,7 +32,7 @@ const fishData: FishData[] = [
   },
   {
     id: 3,
-    name: 'Fasker (Medium)',
+    name: 'Fasker ',
     image: 'https://masskaronline.com/uploads/images/items/Fasker%20%28M%29.jpg',
     pricePerKg: 35,
     minWeight: 0.8,

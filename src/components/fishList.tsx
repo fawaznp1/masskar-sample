@@ -1,4 +1,3 @@
-// FishList.tsx
 import React from 'react';
 import fishData from './fishData';
 import FishCard from './fishCard';
@@ -15,7 +14,7 @@ const FishList: React.FC = () => {
         <FishCard key={fish.id} fish={fish} onAddToCart={handleAddToCart} />
       ))}
     </div>
-  );// hr@etuwa.in 
+  ); 
 };
 
 export default FishList;
