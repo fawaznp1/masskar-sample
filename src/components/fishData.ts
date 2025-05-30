@@ -1,0 +1,198 @@
+
+type CleaningMethod = 'Headless' | 'Gutted' | 'Fillet' | 'Steaks' | 'Whole';
+
+type FishData = {
+  id: number;
+  name: string;
+  image: string;
+  pricePerKg: number;
+  minWeight: number; // in kg
+  description: string;
+  cleaningOptions: CleaningMethod[];
+};
+
+const fishData: FishData[] = [
+  {
+    id: 1,
+    name: 'Kingfish (Kanaad)',
+    image: 'https://masskaronline.com/uploads/images/items/Cat%20Fish.jpg',
+    pricePerKg: 45,
+    minWeight: 1.5,
+    description: 'A firm, flavorful fish perfect for grilling and steaks.',
+    cleaningOptions: ['Headless', 'Gutted', 'Steaks', 'Whole'],
+  },
+  {
+    id: 2,
+    name: 'Hamour (Orange)',
+    image: 'https://masskaronline.com/uploads/images/items/Naiser.jpg',
+    pricePerKg: 60,
+    minWeight: 2,
+    description: 'A prized fish in the Gulf, with mild flavor and firm texture.',
+    cleaningOptions: ['Headless', 'Gutted', 'Fillet', 'Whole'],
+  },
+  {
+    id: 3,
+    name: 'Fasker (Medium)',
+    image: 'https://masskaronline.com/uploads/images/items/Fasker%20%28M%29.jpg',
+    pricePerKg: 35,
+    minWeight: 0.8,
+    description: 'A local favorite for grilling, tender with a mild taste.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 4,
+    name: 'Sultan Ibrahim',
+    image: 'https://masskaronline.com/uploads/images/items/Sooly.jpg',
+    pricePerKg: 40,
+    minWeight: 0.5,
+    description: 'A reddish fish with a sweet, delicate flavor.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 5,
+    name: 'Safee (Rabbitfish)',
+    image: 'https://masskaronline.com/uploads/images/items/Kurkufan.jpg',
+    pricePerKg: 25,
+    minWeight: 0.7,
+    description: 'Mild, sweet flavor; great for grilling or frying.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 6,
+    name: 'Naiser (Golden)',
+    image: 'https://masskaronline.com/uploads/images/items/Sea%20Bream.jpg',
+    pricePerKg: 50,
+    minWeight: 1.2,
+    description: 'A golden-skinned fish popular for its firm, meaty texture.',
+    cleaningOptions: ['Headless', 'Gutted', 'Fillet', 'Whole'],
+  },
+  {
+    id: 7,
+    name: 'Zubaidi (Silver)',
+    image: 'https://masskaronline.com/uploads/images/items/Sheri%20Medium.jpg',
+    pricePerKg: 55,
+    minWeight: 0.6,
+    description: 'A premium fish with delicate white flesh, great for frying.',
+    cleaningOptions: ['Whole', 'Gutted'],
+  },
+  {
+    id: 8,
+    name: 'Faskar (Two-Bar)',
+    image: 'https://masskaronline.com/uploads/images/items/Tilapia%20%28Doha%29.jpg',
+    pricePerKg: 30,
+    minWeight: 0.9,
+    description: 'A versatile fish ideal for grilling and curries.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 9,
+    name: 'Jesh (Bream)',
+    image: 'https://masskaronline.com/uploads/images/items/Crab%20Blue.jpg',
+    pricePerKg: 38,
+    minWeight: 1,
+    description: 'A delicious fish with firm flesh, perfect for BBQ.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 10,
+    name: 'Kanad (Mackerel)',
+    image: 'https://masskaronline.com/uploads/images/items/Crab%20Lady.jpg',
+    pricePerKg: 42,
+    minWeight: 1.5,
+    description: 'Known for its rich, oily flesh and great for grilling.',
+    cleaningOptions: ['Headless', 'Gutted', 'Steaks', 'Whole'],
+  },
+  {
+    id: 11,
+    name: 'Shaari (Spangled)',
+    image: 'https://masskaronline.com/uploads/images/items/Koofar%20%28M%29.jpg',
+    pricePerKg: 36,
+    minWeight: 0.8,
+    description: 'A tender fish with a sweet flavor, perfect for frying.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 12,
+    name: 'Chamees (Golden)',
+    image: 'https://masskaronline.com/uploads/images/items/Koofer%20Big.jpg',
+    pricePerKg: 48,
+    minWeight: 1.3,
+    description: 'Mild and flaky, excellent for steaming and baking.',
+    cleaningOptions: ['Headless', 'Gutted', 'Fillet', 'Whole'],
+  },
+  {
+    id: 13,
+    name: 'Kofar (Cobia)',
+    image: 'https://masskaronline.com/uploads/images/items/Safi%20Doha%20%28B%29.jpg',
+    pricePerKg: 52,
+    minWeight: 2,
+    description: 'A meaty fish with a mild, buttery flavor.',
+    cleaningOptions: ['Headless', 'Gutted', 'Fillet', 'Steaks'],
+  },
+  {
+    id: 14,
+    name: 'Beyah (Golden)',
+    image: 'https://masskaronline.com/uploads/images/items/Prawns%20Sea%20%28M%29.jpg',
+    pricePerKg: 44,
+    minWeight: 1.1,
+    description: 'Firm-fleshed fish, excellent for grilling.',
+    cleaningOptions: ['Headless', 'Gutted', 'Fillet', 'Whole'],
+  },
+  {
+    id: 15,
+    name: 'Kanar (Longtail)',
+    image: 'https://masskaronline.com/uploads/images/items/Squid.jpg',
+    pricePerKg: 39,
+    minWeight: 1.5,
+    description: 'Popular for sashimi and grilling due to its rich taste.',
+    cleaningOptions: ['Headless', 'Gutted', 'Steaks'],
+  },
+  {
+    id: 16,
+    name: 'Albaqer (Goatfish)',
+    image: 'https://masskaronline.com/uploads/images/items/King%20Fish%20%28S%29%20-%20Full.jpg',
+    pricePerKg: 28,
+    minWeight: 0.6,
+    description: 'A small, sweet fish often fried whole.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 17,
+    name: 'Qoba (Queenfish)',
+    image: 'https://masskaronline.com/uploads/images/items/Prawns%20%28Farm%29.jpg',
+    pricePerKg: 40,
+    minWeight: 1.4,
+    description: 'A long-bodied fish with firm flesh, great for grilling.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 18,
+    name: 'Zerri (Bream)',
+    image: 'https://masskaronline.com/uploads/images/items/Sea%20Bream.jpg',
+    pricePerKg: 32,
+    minWeight: 0.9,
+    description: 'A common fish with a delicate flavor, ideal for curries.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+  {
+    id: 19,
+    name: 'Kishaf (Barracuda)',
+    image: 'https://masskaronline.com/uploads/images/items/Sea%20Bass.jpg',
+    pricePerKg: 43,
+    minWeight: 2,
+    description: 'A strong-flavored fish popular in traditional Gulf dishes.',
+    cleaningOptions: ['Headless', 'Gutted', 'Steaks'],
+  },
+  {
+    id: 20,
+    name: 'Saman (Indian)',
+    image: 'https://masskaronline.com/uploads/images/items/Naiser.jpg',
+    pricePerKg: 26,
+    minWeight: 0.8,
+    description: 'Oily fish perfect for frying and curries.',
+    cleaningOptions: ['Headless', 'Gutted', 'Whole'],
+  },
+];
+
+
+export default fishData;
