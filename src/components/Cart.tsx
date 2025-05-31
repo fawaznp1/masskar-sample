@@ -31,7 +31,7 @@ const Cart: React.FC = () => {
     setIsLoading(false);
   }, []);
 
-  // Function to handle user logout
+  //  user logout
   const handleLogout = () => {
     localStorage.removeItem('currentUser');
     localStorage.removeItem('cartItems');
@@ -103,7 +103,7 @@ const Cart: React.FC = () => {
 
   const orderTime = new Date().toLocaleString();
 
-  // Loading Component
+  
   const LoadingSpinner = () => (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="text-center">
@@ -116,7 +116,6 @@ const Cart: React.FC = () => {
     </div>
   );
 
-  // Login Prompt Component
   const LoginPrompt = () => (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white/80 backdrop-blur-sm rounded-3xl shadow-2xl p-8 sm:p-12 text-center max-w-md w-full border border-white/20">
@@ -139,7 +138,7 @@ const Cart: React.FC = () => {
     </div>
   );
 
-  // User Header Component
+  // User Header 
   const UserHeader = () => (
     <div className="bg-white backdrop-blur-sm rounded-3xl shadow-lg p-6 mb-8 border border-white/20">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
@@ -163,7 +162,7 @@ const Cart: React.FC = () => {
     </div>
   );
 
-  // Empty Cart Component
+  // Empty Cart 
   const EmptyCart = () => (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-blue-50 to-blue-100 p-4 py-8">
       <div className="max-w-6xl mx-auto">

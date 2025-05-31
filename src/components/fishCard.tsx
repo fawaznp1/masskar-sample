@@ -50,7 +50,6 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
     const newToast: Toast = { id, message, type };
     setToasts(prev => [...prev, newToast]);
     
-    // Auto remove toast after 5 seconds
     setTimeout(() => {
       setToasts(prev => prev.filter(toast => toast.id !== id));
     }, 5000);
@@ -76,7 +75,6 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       return;
     }
 
-    // Check if cleaning method is selected
     if (!selectedCleaning) {
       showToast('Please select a cleaning method before adding to cart', 'warning');
       return;
@@ -94,7 +92,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       weight: totalWeight,
       cleaningMethod: selectedCleaning as CleaningMethod,
       totalPrice,
-      createdAt: new Date().toISOString() // Current timestamp
+      createdAt: new Date().toISOString()
     };
 
     // Get existing cart items from localStorage
@@ -114,7 +112,6 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       cleaningMethod: selectedCleaning as CleaningMethod
     });
 
-    // Show success toast with all details
     const toastMessage = `Added to cart:
 Fish: ${fish.name}
 Quantity: ${quantity}
@@ -523,7 +520,6 @@ Total Price: ${totalPrice.toFixed(2)} QAR
         `}
       </style>
       
-      {/* Toast Container */}
       <div style={styles.toastContainer} className="toast-container">
         {toasts.map((toast) => (
           <div
