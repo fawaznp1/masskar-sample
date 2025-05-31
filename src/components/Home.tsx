@@ -8,7 +8,7 @@ type Props = {}
 
 function Home({}: Props) {
   return (
-    <div className='mt-20' >
+    <div className='' >
 
   
     <FishList/>

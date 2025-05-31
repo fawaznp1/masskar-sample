@@ -1,3 +1,7 @@
 body{
     margin-top: 1px;
 }
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

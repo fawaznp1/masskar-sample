@@ -1,8 +1,9 @@
-// AuthForm.js
-import { useState, useEffect,useNavigate } from "react";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import './Login.css';
 
 const AuthForm = () => {
+  const navigate = useNavigate();
   const [showLogin, setShowLogin] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -24,12 +25,13 @@ const AuthForm = () => {
         const user = JSON.parse(savedUser);
         setCurrentUser(user);
         setIsAuthenticated(true);
+        navigate('/');
       } catch (error) {
         console.error('Error parsing saved user:', error);
         localStorage.removeItem('currentUser');
       }
     }
-  }, []);
+  }, [navigate]);
 
   const getAllUsers = () => {
     try {
@@ -53,6 +55,8 @@ const AuthForm = () => {
   const saveCurrentUser = (user) => {
     try {
       localStorage.setItem('currentUser', JSON.stringify(user));
+
+    window.dispatchEvent(new Event('userUpdated'));
     } catch (error) {
       console.error('Error saving current user to localStorage:', error);
     }
@@ -85,7 +89,7 @@ const AuthForm = () => {
 
     setTimeout(() => {
       const users = getAllUsers();
-      const user = users.find(
+      const user = users.find( 
         u => u.email === loginData.email && u.password === loginData.password
       );
 
@@ -96,6 +100,7 @@ const AuthForm = () => {
         console.log('Login successful:', user);
         
         setLoginData({ email: '', password: '' });
+        navigate('/');
       } else {
         alert('Invalid email or password!');
       }
@@ -160,6 +165,7 @@ const AuthForm = () => {
       // Clear form data
       setSignupData({ fullName: '', email: '', password: '', confirmPassword: '' });
       setLoading(false);
+      navigate('/');
     }, 1000);
   };
 
@@ -184,6 +190,7 @@ const AuthForm = () => {
   const handleLogout = () => {
     // Remove current user from localStorage
     localStorage.removeItem('currentUser');
+
     
     // Reset state
     setIsAuthenticated(false);
@@ -206,7 +213,7 @@ const AuthForm = () => {
 
   if (isAuthenticated && currentUser) {
     const allUsers = getAllUsers();
-    return (
+   /*  return (
       <div className="home-container">
         <div className="home-content">
           <h1 className="welcome-title">Welcome, {currentUser.fullName}!</h1>
@@ -236,8 +243,8 @@ const AuthForm = () => {
         </div>
       </div>
     );
-
-
+ */
+    
   }
 
   return (

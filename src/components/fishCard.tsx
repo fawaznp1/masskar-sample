@@ -12,23 +12,119 @@ type FishData = {
   cleaningOptions: CleaningMethod[];
 };
 
+type CartItem = {
+  id: string; // Unique identifier for each cart item
+  fish: FishData;
+  quantity: number;
+  weight: number;
+  cleaningMethod: CleaningMethod;
+  totalPrice: number;
+  createdAt: string; // ISO string timestamp
+};
+
 type FishCardProps = {
   fish: FishData;
   onAddToCart: (item: {
     fish: FishData;
     quantity: number;
+    weight: number;
     cleaningMethod: CleaningMethod;
   }) => void;
+  onNavigateToLogin?: () => void;
 };
 
-const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
+type Toast = {
+  id: string;
+  message: string;
+  type: 'success' | 'error' | 'warning';
+};
+
+const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogin }) => {
   const [quantity, setQuantity] = useState<number>(1);
-  const [selectedCleaning, setSelectedCleaning] = useState<CleaningMethod>(fish.cleaningOptions[0]);
+  const [selectedCleaning, setSelectedCleaning] = useState<CleaningMethod | ''>('');
   const [showModal, setShowModal] = useState(false);
+  const [toasts, setToasts] = useState<Toast[]>([]);
+
+  const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
+    const id = Date.now().toString();
+    const newToast: Toast = { id, message, type };
+    setToasts(prev => [...prev, newToast]);
+    
+    // Auto remove toast after 5 seconds
+    setTimeout(() => {
+      setToasts(prev => prev.filter(toast => toast.id !== id));
+    }, 5000);
+  };
+
+  const removeToast = (id: string) => {
+    setToasts(prev => prev.filter(toast => toast.id !== id));
+  };
 
   const handleAddToCart = () => {
-/*     onAddToCart({ fish, quantity, cleaningMethod: selectedCleaning });
- */    alert(`  ${fish.minWeight} kg of   ${fish.name} added to cart`)
+    // Check if user is logged in using localStorage
+    const currentUser = localStorage.getItem('currentUser');
+    if (!currentUser) {
+      if (onNavigateToLogin) {
+        onNavigateToLogin();
+
+      } else {
+        showToast('Please login first', 'error');
+       setTimeout(() => {
+      window.location.href = '/login';
+    }, 2000); 
+      }
+      return;
+    }
+
+    // Check if cleaning method is selected
+    if (!selectedCleaning) {
+      showToast('Please select a cleaning method before adding to cart', 'warning');
+      return;
+    }
+
+    // Calculate total weight based on quantity
+    const totalWeight = fish.minWeight * quantity;
+    const totalPrice = fish.pricePerKg * totalWeight;
+
+    // Create cart item with timestamp and unique ID
+    const cartItem: CartItem = {
+      id: `${fish.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Unique ID
+      fish,
+      quantity,
+      weight: totalWeight,
+      cleaningMethod: selectedCleaning as CleaningMethod,
+      totalPrice,
+      createdAt: new Date().toISOString() // Current timestamp
+    };
+
+    // Get existing cart items from localStorage
+    const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
+    
+    // Add new item to cart
+    const updatedCartItems = [...existingCartItems, cartItem];
+    
+    // Save updated cart to localStorage
+    localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
+
+    // Call the original onAddToCart callback for any parent component logic
+    onAddToCart({
+      fish,
+      quantity,
+      weight: totalWeight,
+      cleaningMethod: selectedCleaning as CleaningMethod
+    });
+
+    // Show success toast with all details
+    const toastMessage = `Added to cart:
+Fish: ${fish.name}
+Quantity: ${quantity}
+Weight: ${totalWeight} kg
+Cleaning Method: ${selectedCleaning}
+Price per kg: ${fish.pricePerKg} QAR
+Total Price: ${totalPrice.toFixed(2)} QAR
+`;
+    
+    showToast(toastMessage, 'success');
   };
 
   const styles = {
@@ -36,25 +132,25 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       justifyContent: 'center',
       borderRadius: '6px',
       padding: '15px',
-      margin: '10px auto',
-      width: '90%',
-       maxWidth: '300px',
-       background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
+      margin: '10px auto', 
+      width: '80%',
+      maxWidth: '280px',
+      background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 16px rgba(0,0,0,0.08)',
       cursor: 'pointer',
       transition: 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)',
-     overflow: 'hidden' as const,
+      overflow: 'hidden' as const,
       backdropFilter: 'blur(10px)',
       border: '1px solid rgba(255,255,255,0.2)',
       '@media (max-Width: 768px)': {
         padding: '12px',
         borderRadius: '12px',
-        margin: '8px auto'
+        margin: '8px 12px' // Reduced mobile margin to fit more cards
       }
     },
-    cardHover: {
-      transform: 'translateY(-12px) scale(1.02)',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.12)',
+    cardHover: { 
+     /*  transform: 'translateY(-12px) scale(1.02)',
+      boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.12)', */
     },
     cardBefore: {
       content: '""',
@@ -68,7 +164,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       zIndex: 1
     },
     image: {
-      width: '50%',
+      width: '40%',
       display: 'block',
       margin: '0 auto 0px auto',
       borderRadius: '12px',
@@ -113,10 +209,10 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       color: '#27ae60',
       margin: 0,
       padding: '4px 8px',
-      background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
-      borderRadius: '16px',
-      boxShadow: '0 2px 8px rgba(39,174,96,0.2)',
-      whiteSpace: 'nowrap' as const
+/*       background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+ */      borderRadius: '16px',
+/*       boxShadow: '0 2px 8px rgba(39,174,96,0.2)',
+ */      whiteSpace: 'nowrap' as const
     },
     minWeight: {
       color: '#7f8c8d',
@@ -126,6 +222,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       position: 'relative' as const,
       zIndex: 2
     },
+
     select: {
       marginBottom: '20px',
       width: '100%',
@@ -142,9 +239,15 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       position: 'relative' as const,
       zIndex: 2
     },
-    selectFocus: {
-      borderColor: '#667eea',
+    selectRequired: {
+            borderColor: '#667eea',
       boxShadow: '0 0 0 3px rgba(102,126,234,0.1)',
+
+    },
+    selectFocus: {
+            borderColor: '#e74c3c',
+      boxShadow: '0 0 0 3px rgba(231,76,60,0.1)',
+
       transform: 'translateY(-2px)'
     },
     controlsContainer: {
@@ -171,7 +274,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
       height: 'clamp(32px, 8vw, 36px)',
       border: 'none',
       borderRadius: '8px',
-      background: 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)',
+      background: 'linear-gradient(135deg, #56ab2f 0%)',
       color: '#fff',
       fontSize: 'clamp(14px, 4vw, 18px)',
       fontWeight: '600',
@@ -195,9 +298,9 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
     },
     addToCartButton: {
       flex: 1,
-      minWidth: '100px',
-      padding: 'clamp(10px, 3vw, 12px) clamp(16px, 4vw, 20px)',
-      background: 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)',
+      minWidth: '80px',
+      padding: 'clamp(10px, 3vw, 12px) clamp(10px, 4vw, 6px)',
+      background: 'linear-gradient(135deg, #56ab2f 0%)',
       color: '#fff',
       border: 'none',
       borderRadius: '12px',
@@ -289,6 +392,51 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
     closeButtonHover: {
       transform: 'translateY(-2px)',
       boxShadow: '0 8px 25px rgba(102,126,234,0.4)'
+    },
+    toastContainer: {
+      position: 'fixed' as const,
+      top: '20px',
+      right: '20px',
+      zIndex: 10000,
+      display: 'flex',
+      flexDirection: 'column' as const,
+      gap: '10px',
+      maxWidth: '400px'
+    },
+    toast: {
+      padding: '16px 20px',
+      borderRadius: '12px',
+      color: '#fff',
+      fontSize: '14px',
+      fontWeight: '500',
+      boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+      animation: 'toastSlideIn 0.3s ease-out',
+      position: 'relative' as const,
+      cursor: 'pointer',
+      maxWidth: '100%',
+      wordWrap: 'break-word' as const,
+      whiteSpace: 'pre-line' as const
+    },
+    toastSuccess: {
+      background: 'linear-gradient(135deg, #56ab2f 0%, #a8e6cf 100%)'
+    },
+    toastError: {
+      background: 'linear-gradient(135deg, #e74c3c 0%, #ffb3ba 100%)'
+    },
+    toastWarning: {
+      background: 'linear-gradient(135deg, #f39c12 0%, #ffd93d 100%)'
+    },
+    toastCloseButton: {
+      position: 'absolute' as const,
+      top: '8px',
+      right: '12px',
+      background: 'none',
+      border: 'none',
+      color: '#fff',
+      fontSize: '18px',
+      cursor: 'pointer',
+      opacity: 0.8,
+      transition: 'opacity 0.2s ease'
     }
   };
 
@@ -309,6 +457,17 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
             to { 
               opacity: 1; 
               transform: translateY(0) scale(1); 
+            }
+          }
+
+          @keyframes toastSlideIn {
+            from { 
+              opacity: 0; 
+              transform: translateX(100%); 
+            }
+            to { 
+              opacity: 1; 
+              transform: translateX(0); 
             }
           }
           
@@ -334,8 +493,8 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
 
           @media (max-width: 768px) {
             .fish-card {
-              width: 95% !important;
-              margin: 8px auto !important;
+              width: 85% !important;
+              margin: 8px 25px !important;
             }
           }
 
@@ -353,9 +512,48 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
               width: 50% !important;
               min-width: unset !important;
             }
+
+            .toast-container {
+              top: 10px !important;
+              right: 10px !important;
+              left: 10px !important;
+              max-width: none !important;
+            }
           }
         `}
       </style>
+      
+      {/* Toast Container */}
+      <div style={styles.toastContainer} className="toast-container">
+        {toasts.map((toast) => (
+          <div
+            key={toast.id}
+            style={{
+              ...styles.toast,
+              ...(toast.type === 'success' ? styles.toastSuccess : 
+                  toast.type === 'error' ? styles.toastError : styles.toastWarning)
+            }}
+            onClick={() => removeToast(toast.id)}
+          >
+            <button
+              style={styles.toastCloseButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                removeToast(toast.id);
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.opacity = '1';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.opacity = '0.8';
+              }}
+            >
+              ×
+            </button>
+            {toast.message}
+          </div>
+        ))}
+      </div>
       
       <div 
         className="fish-card"
@@ -385,20 +583,26 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
           <p style={styles.price}>{fish.pricePerKg} QAR/kg</p>                
         </div>
         
-        <p style={styles.minWeight}>min weight: {fish.minWeight} kg</p>           
+        <p style={styles.minWeight}>min weight: {fish.minWeight} kg</p>
 
         <select
           value={selectedCleaning}
-          onChange={(e) => setSelectedCleaning(e.target.value as CleaningMethod)}
-          style={styles.select}
+          onChange={(e) => setSelectedCleaning(e.target.value as CleaningMethod | '')}
+          style={{
+            ...styles.select,
+            ...(selectedCleaning === '' ? styles.selectRequired : {})
+          }}
           onFocus={(e) => {
             Object.assign(e.currentTarget.style, {...styles.select, ...styles.selectFocus});
           }}
           onBlur={(e) => {
-            Object.assign(e.currentTarget.style, styles.select);
+            Object.assign(e.currentTarget.style, {
+              ...styles.select,
+              ...(selectedCleaning === '' ? styles.selectRequired : {})
+            });
           }}
         >
-          <option value="" disabled>Select cleaning</option>
+          <option value="" disabled>Select cleaning method *</option>
           {fish.cleaningOptions.map((method) => (
             <option key={method} value={method}>{method}</option>
           ))}
@@ -453,9 +657,8 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart }) => {
             <i className="fa-solid fa-cart-shopping"></i> Add to cart
           </button>
         </div>
-
-        
       </div>
+      
       {showModal && (
           <div 
             style={styles.modal}
