@@ -91,12 +91,12 @@ const Cart: React.FC = () => {
   );
 
   if (!user) return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-lg p-8 text-center max-w-md">
-        <h2 className="text-2xl font-bold mb-4"> Log In to view Cart</h2>
+    <div className="min-h-screen flex items-center justify-center p-2">
+      <div className="bg-white rounded-xl shadow-lg p-4 text-center max-w-md">
+        <h2 className="text-xl mb-4"> Log In to view Cart</h2>
         <button
           onClick={() => window.location.href = '/login'}
-          className="bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg"
+          className="bg-teal-900 text-white font-semibold py-3 px-6 rounded-full"
         >
           Login to Continue
         </button>
@@ -114,11 +114,11 @@ const Cart: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 py-8">
+    <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-3xl mx-auto">
         <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center text-white">
+            <div className="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center text-white">
               {user?.fullName?.charAt(0)}
             </div>
             <span className="">{user?.fullName}</span>
@@ -129,7 +129,7 @@ const Cart: React.FC = () => {
         </div>
 
         <div className="bg-white rounded-xl shadow-md p-4 mb-6">
-          <h2 className="text-xl mb-4 flex items-center gap-2">
+          <h2 className="text-lg mb-4 flex items-center gap-2">
             <ShoppingCart size={20} /> Your Cart ({cartItems.length} items)
           </h2>
 
@@ -139,7 +139,7 @@ const Cart: React.FC = () => {
                 <div className="flex justify-between">
                   <div>
                     <h3 className="">{item.fish.name}</h3>
-                    <p>Cleaning: {item.cleaningMethod || 'Not specified'}</p>
+                    <p className='text-sm'>Cleaning: {item.cleaningMethod || 'Not specified'}</p>
                     <p className="text-sm text-gray-600">
                       {item.quantity} x {item.fish.minWeight} kg {/* x {item.fish.pricePerKg} QR/kg */}
                     </p>

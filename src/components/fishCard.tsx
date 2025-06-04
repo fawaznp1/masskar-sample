@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './fishCard.css'
 
 type CleaningMethod = 'Headless' | 'Gutted' | 'Fillet' | 'Steaks' | 'Whole';
 
@@ -47,9 +48,33 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
   const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
+    // Backup and restore cart items mechanism
+    const handleBeforeUnload = () => {
+      const cartItems = localStorage.getItem('cartItems');
+      if (cartItems) {
+        sessionStorage.setItem('cartItemsBackup', cartItems);
+      }
+    };
+
+    const handleLoad = () => {
+      if (!localStorage.getItem('cartItems') && sessionStorage.getItem('cartItemsBackup')) {
+        localStorage.setItem('cartItems', sessionStorage.getItem('cartItemsBackup')!);
+        sessionStorage.removeItem('cartItemsBackup');
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    window.addEventListener('load', handleLoad);
+
+    // Check if item is in cart
     const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
     const isItemInCart = existingCartItems.some(item => item.fish.id === fish.id);
     setIsInCart(isItemInCart);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      window.removeEventListener('load', handleLoad);
+    };
   }, [fish.id]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
@@ -144,7 +169,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       justifyContent: 'center',
       borderRadius: '6px',
       padding: '10px',
-      margin: '5px auto ', 
+      margin: '10px  ', 
       width: '100%',
       maxWidth: '230px',
       background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
@@ -157,13 +182,10 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       '@media (maxWidth: 768px)': {
         padding: '6 px',
         borderRadius: '12px',
-        margin: ' auto', 
-      }
+/*         margin: ' auto', 
+ */      }
     },
-    cardHover: { 
-     /*  transform: 'translateY(-12px) scale(1.02)',
-      boxShadow: '0 20px 40px rgba(0,0,0,0.15), 0 8px 32px rgba(0,0,0,0.12)', */
-    },
+    
     cardBefore: {
       content: '""',
       position: 'absolute' as const,
@@ -204,8 +226,8 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       gap: '8px'
     },
     fishName: {
-      fontSize: 'clamp(16px, 4vw, 10px)',
-      fontfamily: 'Manrope',
+       fontSize: 'clamp(16px, 4vw, 10px)',
+   
       margin: '0 2px 5px 9px',
       display: 'flex',
       justifyContent: 'center', 
@@ -213,7 +235,8 @@ Total Price: ${totalPrice.toFixed(2)} QAR
     },
     fishNameArabic:{
       fontSize: 'clamp(16px, 4vw, 10px)',
-      fontfamily: 'Rubik',
+      fontfamily: 'Rubik, sans-serif',
+            fontWeight: '400',
       margin: '0 auto',
       display: 'flex',
       justifyContent: 'center', 
@@ -262,7 +285,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
     },
     controlsContainer: {
       display: 'flex',
-      justifyContent: 'center', // Changed from 'space-between' to 'center'
+      justifyContent: 'center', 
       alignItems: 'center',
       gap: '6px',
       position: 'relative' as const,
@@ -280,16 +303,14 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       minWidth: '70px'
     },
     quantityButton: {
-      width: 'clamp(32px, 8vw, 36px)',
-      height: 'clamp(32px, 8vw, 36px)',
+      width: 'clamp(26px, 8vw, 20px)',
+      height: 'clamp(26px, 8vw, 20px)',
       margin:'2px',
-/*       border: 'outline',
-
- */      
+    
        border: '1px solid #e8ecef',
       borderColor: '#15803d',
       color: '#000',
-      fontSize: 'clamp(14px, 4vw, 18px)',
+      fontSize: 'clamp(14px, 4vw, 10px)',
       fontWeight: '600',
       cursor: 'pointer',
       transition: 'all 0.2s ease',
@@ -297,16 +318,12 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       alignItems: 'center',
       justifyContent: 'center'
     },
-    quantityButtonHover: {
-     /*  transform: 'scale(1.1)',
-      boxShadow: '0 4px 12px rgba(102,126,234,0.3)' */
-    },
+   
     quantityDisplay: {
       margin: '0 12px',
-      fontSize: 'clamp(14px, 4vw, 16px)',
-      fontfamily: "Comfortaa , sans-serif",
-      fontWeight: '600',
-      color: '#2c3e50',
+      fontSize: 'clamp(14px, 4vw, 12px)',
+    
+      color: '#2c3e50', 
       minWidth: '5px',
       textAlign: 'center' as const
     },
@@ -431,6 +448,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       transition: 'opacity 0.2s ease'
     }
   };
+
   return (
     <>
       <div>
@@ -465,16 +483,11 @@ Total Price: ${totalPrice.toFixed(2)} QAR
         <div
           className="fish-card"
           style={{ ...styles.card, position: 'relative' }}
-          onMouseEnter={(e) => {
-            Object.assign(e.currentTarget.style, styles.cardHover);
-          }}
-          onMouseLeave={(e) => {
-            Object.assign(e.currentTarget.style, styles.card);
-          }}
+          
         >
           {isInCart && (
-            <div style={{ position: 'absolute', top: 10, right: 10, fontSize: '1.5rem' }}>
-              🛒
+            <div style={{ position: 'absolute', top: 10, right: 10, fontSize: '1.5rem',color:'teal' }}>
+              <i className="fa-solid fa-cart-plus"></i>
             </div>
           )}
           <img
@@ -492,8 +505,8 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               Object.assign(e.currentTarget.style, styles.image);
             }}
           />
-          <h6 style={styles.fishName}>{fish.name}</h6>
-          <h6 style={styles.fishNameArabic}>لا يعرض أحد </h6>
+          <h6 style={styles.fishName} className='fishName'>{fish.name}</h6>
+          <h6 style={styles.fishNameArabic} className='fishName'>لا يعرض أحد </h6>
           <div style={styles.header}>
             <p style={styles.minWeight}>Min weight: {fish.minWeight} kg</p>
             <p style={styles.price}>{fish.pricePerKg} QR/kg</p>
@@ -519,7 +532,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               });
             }}
           >
-            <option value="" disabled>
+            <option value="" disabled >
               Select cleaning method *
             </option>
             {fish.cleaningOptions.map((method) => (
@@ -531,7 +544,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
 
           <div style={styles.controlsContainer}>
             <div style={styles.quantityContainer}>
-              <span style={styles.quantityDisplay}>Quantity : {quantity}</span>
+              <span style={styles.quantityDisplay} className='Quantity'>Quantity : {quantity}</span>
               <button
                 style={styles.quantityButton}
                 onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}

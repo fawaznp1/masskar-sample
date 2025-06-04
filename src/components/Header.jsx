@@ -273,7 +273,7 @@ const Header = () => {
               ) : (
                 <button 
                   onClick={loginOnClick}
-                  className="hidden lg:inline-flex px-4 py-2 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all duration-200 transform hover:scale-105"
+                  className="hidden lg:inline-flex px-4 py-2 bg-teal-800 text-white font-medium rounded-xl hover:bg-teal-700 transition-all duration-200 transform hover:scale-105"
                 >
                   Login
                 </button>
@@ -444,7 +444,7 @@ const Header = () => {
         <div className=" py-1 mt-16 lg:mt-20">
           <div className="animate-marquee whitespace-nowrap">
             <span className="text-sm- font-medium text-black">
-              <marquee behavior="" direction="">  📞 +91 9874563210 • ✉️ masskar@gmail.com • 🚚 Free delivery on orders above QR 100</marquee>
+              <marquee behavior="" direction="">  📞 +91 9874563210 • ✉️ masskar@gmail.com • 🚚 Free delivery on orders above QR 20</marquee>
             
             </span>
           </div>

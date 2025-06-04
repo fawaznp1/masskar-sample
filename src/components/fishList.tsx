@@ -33,58 +33,77 @@ const FishList: React.FC = () => {
     <div style={{
       display: 'flex',
       flexDirection: isMobile ? 'column' : 'row',
-      minHeight: '100vh',
-      position: 'relative'
+      height: '100vh',
+      position: 'relative',
+      overflow: 'hidden'
     }}>
       <div style={{
-        flex: isMobile ? 'none' : 3,
-        padding: '5px',
-        display: 'flex',
+        flex: isMobile ? '1 1 auto' : 4,
+        padding: '1px',
+/*         margin:'1px',
+ */        display: 'flex',
         flexDirection: 'column',
-        gap: '10px',
+        gap: '1px',
         alignContent: 'center',
         overflowY: 'auto',
-        width: isMobile ? '100%' : undefined
+        width: isMobile ? '100%' : '100%',
+        height: '100%'
       }}>
         <div style={{
           display: 'flex',
           justifyContent: 'center',
           marginBottom: '16px',
-          gap: '8px'
+          gap: '8px',
         }}>
           <Button 
-            variant={activeTab === 'All' ? 'contained' : 'outlined'}
+            style={{
+              backgroundColor: activeTab === 'All' ? 'teal' : 'white',
+              color: activeTab === 'All' ? 'white' : 'teal',
+              border: '1px solid teal',
+              borderRadius: "25px"
+            }}
             onClick={() => setActiveTab('All')}
-            className="px-6 py-2 font-medium rounded-full transition-all duration-200 hover:shadow-md"
+            className="px-6 py-2 font-medium  rounded-full transition-all duration-200 hover:shadow-md"
           >
             All
           </Button>
           <Button 
-            variant={activeTab === 'Offers' ? 'contained' : 'outlined'}
+            style={{
+              backgroundColor: activeTab === 'Offers' ? 'teal' : 'white',
+              color: activeTab === 'Offers' ? 'white' : 'teal',
+              border: '1px solid teal',
+              borderRadius: "25px"
+            }}
             onClick={() => setActiveTab('Offers')}
-            className="px-6 py-2 font-medium rounded-lg transition-all duration-200 hover:shadow-md"
+            className="px-6 py-2 font-medium rounded-full transition-all duration-200 hover:shadow-md"
           >
             Offers
           </Button>
           <Button 
-            variant={activeTab === 'Low Price' ? 'contained' : 'outlined'}
+            style={{
+              backgroundColor: activeTab === 'Low Price' ? 'teal' : 'white',
+              color: activeTab === 'Low Price' ? 'white' : 'teal',
+              border: '1px solid teal',
+              borderRadius: "25px"
+            }}
             onClick={() => setActiveTab('Low Price')}
             className="px-6 py-2 font-medium rounded-full transition-all duration-200 hover:shadow-md"
           >
             Low Price
-          </Button>
+          </Button> 
         </div>
 
         <div style={{
           display: 'flex',
           flexWrap: 'wrap',
           gap: '16px',
-          justifyContent: 'center'
+          justifyContent: 'center',
+          minHeight: '0' 
         }}>
           {activeTab === 'Offers' ? (
-       <div className="w-full text-center py-12 px-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
-  <div className="text-gray-400 text-lg font-medium">No offers right now</div>
-</div>
+            <div className="w-full text-center py-12 px-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border border-gray-200 shadow-sm">
+              <div className="text-gray-400 text-lg font-medium">Currently we have no offers</div>
+            </div>
           ) : (
             displayData.map((fish) => (
               <FishCard key={fish.id} fish={fish} onAddToCart={handleAddToCart} />
@@ -103,7 +122,7 @@ const FishList: React.FC = () => {
         position: isMobile ? 'fixed' : 'relative',
         top: isMobile ? 0 : undefined,
         right: isMobile ? 0 : undefined,
-        height: isMobile ? '100vh' : undefined,
+        height: isMobile ? '100vh' : '100%',
         backgroundColor: isMobile ? 'white' : undefined,
         zIndex: isMobile ? 999 : undefined,
         boxShadow: isMobile ? '0 0 10px rgba(0,0,0,0.2)' : undefined
