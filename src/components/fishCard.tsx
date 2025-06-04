@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 type CleaningMethod = 'Headless' | 'Gutted' | 'Fillet' | 'Steaks' | 'Whole';
 
@@ -7,19 +7,19 @@ type FishData = {
   name: string;
   image: string;
   pricePerKg: number;
-  minWeight: number; // in kg
+  minWeight: number;
   description: string;
   cleaningOptions: CleaningMethod[];
 };
 
 type CartItem = {
-  id: string; // Unique identifier for each cart item
+  id: string;
   fish: FishData;
   quantity: number;
   weight: number;
   cleaningMethod: CleaningMethod;
   totalPrice: number;
-  createdAt: string; // ISO string timestamp
+  createdAt: string;
 };
 
 type FishCardProps = {
@@ -44,12 +44,19 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
   const [selectedCleaning, setSelectedCleaning] = useState<CleaningMethod | ''>('');
   const [showModal, setShowModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
+  const [isInCart, setIsInCart] = useState(false);
+
+  useEffect(() => {
+    const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
+    const isItemInCart = existingCartItems.some(item => item.fish.id === fish.id);
+    setIsInCart(isItemInCart);
+  }, [fish.id]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     const id = Date.now().toString();
     const newToast: Toast = { id, message, type };
     setToasts(prev => [...prev, newToast]);
-    
+
     setTimeout(() => {
       setToasts(prev => prev.filter(toast => toast.id !== id));
     }, 5000);
@@ -60,17 +67,15 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
   };
 
   const handleAddToCart = () => {
-    // Check if user is logged in using localStorage
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) {
       if (onNavigateToLogin) {
         onNavigateToLogin();
-
       } else {
         showToast('Please login first', 'error');
-       setTimeout(() => {
-      window.location.href = '/login';
-    }, 2000); 
+        setTimeout(() => {
+          window.location.href = '/login';
+        }, 2000);
       }
       return;
     }
@@ -80,13 +85,11 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       return;
     }
 
-    // Calculate total weight based on quantity
     const totalWeight = fish.minWeight * quantity;
     const totalPrice = fish.pricePerKg * totalWeight;
 
-    // Create cart item with timestamp and unique ID
     const cartItem: CartItem = {
-      id: `${fish.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`, // Unique ID
+      id: `${fish.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
       fish,
       quantity,
       weight: totalWeight,
@@ -95,22 +98,18 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       createdAt: new Date().toISOString()
     };
 
-    // Get existing cart items from localStorage
     const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
-    
-    // Add new item to cart
     const updatedCartItems = [...existingCartItems, cartItem];
-    
-    // Save updated cart to localStorage
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
 
-    // Call the original onAddToCart callback for any parent component logic
     onAddToCart({
       fish,
       quantity,
       weight: totalWeight,
       cleaningMethod: selectedCleaning as CleaningMethod
     });
+
+    setIsInCart(true);
 
     const toastMessage = `Added to cart:
 Fish: ${fish.name}
@@ -120,18 +119,34 @@ Cleaning Method: ${selectedCleaning}
 Price per kg: ${fish.pricePerKg} QAR
 Total Price: ${totalPrice.toFixed(2)} QAR
 `;
-    
     showToast(toastMessage, 'success');
   };
 
-  const styles = {
+  const handleQuantityChange = (newQuantity: number) => {
+    setQuantity(newQuantity);
+    const storedCart = localStorage.getItem('cart');
+    let cart = storedCart ? JSON.parse(storedCart) : [];
+
+    const fishIndex = cart.findIndex(
+      (item: any) => item.id === fish.id && item.cleaningMethod === selectedCleaning
+    );
+
+    if (fishIndex !== -1) {
+      cart[fishIndex].quantity = newQuantity;
+      localStorage.setItem('cart', JSON.stringify(cart));
+    }
+
+    handleAddToCart();
+  };
+
+   const styles = {
     card: {
       justifyContent: 'center',
       borderRadius: '6px',
-      padding: '15px',
-      margin: '10px auto', 
-      width: '80%',
-      maxWidth: '280px',
+      padding: '10px',
+      margin: '5px auto ', 
+      width: '100%',
+      maxWidth: '230px',
       background: 'linear-gradient(145deg, #ffffff, #f8f9fa)',
       boxShadow: '0 8px 32px rgba(0,0,0,0.12), 0 2px 16px rgba(0,0,0,0.08)',
       cursor: 'pointer',
@@ -139,10 +154,10 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       overflow: 'hidden' as const,
       backdropFilter: 'blur(10px)',
       border: '1px solid rgba(255,255,255,0.2)',
-      '@media (max-Width: 768px)': {
-        padding: '12px',
+      '@media (maxWidth: 768px)': {
+        padding: '6 px',
         borderRadius: '12px',
-        margin: '8px 12px' // Reduced mobile margin to fit more cards
+        margin: ' auto', 
       }
     },
     cardHover: { 
@@ -169,7 +184,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       filter: 'brightness(1.02) contrast(1.05)',
       position: 'relative' as const,
       zIndex: 2,
-      '@media (max-Width: 480px)': {
+      '@media (maxWidth: 480px)': {
         width: '80%',
         margin: '0 auto 12px auto'
       }
@@ -189,42 +204,42 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       gap: '8px'
     },
     fishName: {
-      fontSize: 'clamp(16px, 4vw, 20px)',
-      fontWeight: '700',
-      color: '#2c3e50',
-      margin: 0,
-      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-      WebkitBackgroundClip: 'text',
-      WebkitTextFillColor: 'transparent',
-      backgroundClip: 'text',
-      flex: '1',
-      minWidth: '120px'
+      fontSize: 'clamp(16px, 4vw, 10px)',
+      fontfamily: 'Manrope',
+      margin: '0 2px 5px 9px',
+      display: 'flex',
+      justifyContent: 'center', 
+      minWidth: '80px'
+    },
+    fishNameArabic:{
+      fontSize: 'clamp(16px, 4vw, 10px)',
+      fontfamily: 'Rubik',
+      margin: '0 auto',
+      display: 'flex',
+      justifyContent: 'center', 
+      minWidth: '80px'
     },
     price: {
-      fontSize: 'clamp(14px, 3.5vw, 18px)',
-      fontWeight: '600',
-      color: '#27ae60',
+      fontSize: 'clamp(10px, 3.5vw, 15px)',
+      fontFamily: 'Saira, sans-serif',
+      fontWeight: '200',
       margin: 0,
-      padding: '4px 8px',
-/*       background: 'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
- */      borderRadius: '16px',
-/*       boxShadow: '0 2px 8px rgba(39,174,96,0.2)',
- */      whiteSpace: 'nowrap' as const
+      padding: '4px 2px',
+      borderRadius: '16px',
+      whiteSpace: 'nowrap' as const,zIndex:'2'
     },
     minWeight: {
       color: '#7f8c8d',
-      fontSize: '14px',
-      marginBottom: '16px',
-      fontWeight: '500',
+      fontSize: '12px',
+      fontWeight: '400',
       position: 'relative' as const,
-      zIndex: 2
+      zIndex: 2,
     },
-
     select: {
       marginBottom: '20px',
       width: '100%',
       padding: '12px 16px',
-      border: '2px solid #e8ecef',
+      border: '2px solid #15803d',
       borderRadius: '12px',
       fontSize: '14px',
       fontWeight: '500',
@@ -237,21 +252,19 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       zIndex: 2
     },
     selectRequired: {
-            borderColor: '#667eea',
+      borderColor: '#15803d',
       boxShadow: '0 0 0 3px rgba(102,126,234,0.1)',
-
     },
     selectFocus: {
-            borderColor: '#e74c3c',
+      borderColor: '#15803d',
       boxShadow: '0 0 0 3px rgba(231,76,60,0.1)',
-
       transform: 'translateY(-2px)'
     },
     controlsContainer: {
       display: 'flex',
-      justifyContent: 'space-between',
+      justifyContent: 'center', // Changed from 'space-between' to 'center'
       alignItems: 'center',
-      gap: '12px',
+      gap: '6px',
       position: 'relative' as const,
       zIndex: 2,
       flexWrap: 'wrap' as const
@@ -264,15 +277,18 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       padding: '6px',
       boxShadow: '0 4px 12px rgba(0,0,0,0.05)',
       border: '1px solid #e8ecef',
-      minWidth: '120px'
+      minWidth: '70px'
     },
     quantityButton: {
       width: 'clamp(32px, 8vw, 36px)',
       height: 'clamp(32px, 8vw, 36px)',
-      border: 'none',
-      borderRadius: '8px',
-      background: 'linear-gradient(135deg, #56ab2f 0%)',
-      color: '#fff',
+      margin:'2px',
+/*       border: 'outline',
+
+ */      
+       border: '1px solid #e8ecef',
+      borderColor: '#15803d',
+      color: '#000',
       fontSize: 'clamp(14px, 4vw, 18px)',
       fontWeight: '600',
       cursor: 'pointer',
@@ -282,38 +298,17 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       justifyContent: 'center'
     },
     quantityButtonHover: {
-      transform: 'scale(1.1)',
-      boxShadow: '0 4px 12px rgba(102,126,234,0.3)'
+     /*  transform: 'scale(1.1)',
+      boxShadow: '0 4px 12px rgba(102,126,234,0.3)' */
     },
     quantityDisplay: {
       margin: '0 12px',
       fontSize: 'clamp(14px, 4vw, 16px)',
+      fontfamily: "Comfortaa , sans-serif",
       fontWeight: '600',
       color: '#2c3e50',
-      minWidth: '20px',
+      minWidth: '5px',
       textAlign: 'center' as const
-    },
-    addToCartButton: {
-      flex: 1,
-      minWidth: '80px',
-      padding: 'clamp(10px, 3vw, 12px) clamp(10px, 4vw, 6px)',
-      background: 'linear-gradient(135deg, #56ab2f 0%)',
-      color: '#fff',
-      border: 'none',
-      borderRadius: '12px',
-      fontSize: 'clamp(12px, 3.5vw, 14px)',
-      fontWeight: '600',
-      cursor: 'pointer',
-      transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      position: 'relative' as const,
-      overflow: 'hidden' as const,
-      boxShadow: '0 4px 15px rgba(86,171,47,0.3)',
-      whiteSpace: 'nowrap' as const
-    },
-    addToCartButtonHover: {
-      transform: 'translateY(-2px)',
-      boxShadow: '0 8px 25px rgba(86,171,47,0.4)',
-      background: 'linear-gradient(135deg, #4a9e2a 0%, #96d9b7 100%)'
     },
     modal: {
       position: 'fixed' as const,
@@ -436,257 +431,140 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       transition: 'opacity 0.2s ease'
     }
   };
-
   return (
     <>
-      <style>
-        {`
-          @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
-          
-          @keyframes modalSlideIn {
-            from { 
-              opacity: 0; 
-              transform: translateY(-30px) scale(0.9); 
-            }
-            to { 
-              opacity: 1; 
-              transform: translateY(0) scale(1); 
-            }
-          }
-
-          @keyframes toastSlideIn {
-            from { 
-              opacity: 0; 
-              transform: translateX(100%); 
-            }
-            to { 
-              opacity: 1; 
-              transform: translateX(0); 
-            }
-          }
-          
-          .fish-card {
-            position: relative;
-          }
-          
-          .fish-card::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-            transition: left 0.6s ease-in-out;
-            z-index: 1;
-          }
-          
-          .fish-card:hover::before {
-            left: 100%;
-          }
-
-          @media (max-width: 768px) {
-            .fish-card {
-              width: 85% !important;
-              margin: 8px 25px !important;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .controls-container {
-              flex-direction: column !important;
-              gap: 12px !important;
-            }
-            
-            .quantity-container {
-              align-self: center !important;
-            }
-            
-            .add-to-cart-button {
-              width: 50% !important;
-              min-width: unset !important;
-            }
-
-            .toast-container {
-              top: 10px !important;
-              right: 10px !important;
-              left: 10px !important;
-              max-width: none !important;
-            }
-          }
-        `}
-      </style>
-      
-      <div style={styles.toastContainer} className="toast-container">
-        {toasts.map((toast) => (
-          <div
-            key={toast.id}
-            style={{
-              ...styles.toast,
-              ...(toast.type === 'success' ? styles.toastSuccess : 
-                  toast.type === 'error' ? styles.toastError : styles.toastWarning)
-            }}
-            onClick={() => removeToast(toast.id)}
-          >
-            <button
-              style={styles.toastCloseButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                removeToast(toast.id);
+      <div>
+        <div style={styles.toastContainer}>
+          {toasts.map((toast) => (
+            <div
+              key={toast.id}
+              style={{
+                ...styles.toast,
+                ...(toast.type === 'success'
+                  ? styles.toastSuccess
+                  : toast.type === 'error'
+                  ? styles.toastError
+                  : styles.toastWarning)
               }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.opacity = '1';
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.opacity = '0.8';
-              }}
+              onClick={() => removeToast(toast.id)}
             >
-              ×
-            </button>
-            {toast.message}
-          </div>
-        ))}
-      </div>
-      
-      <div 
-        className="fish-card"
-        style={styles.card}
-        onMouseEnter={(e) => {
-          Object.assign(e.currentTarget.style, styles.cardHover);
-        }}
-        onMouseLeave={(e) => {
-          Object.assign(e.currentTarget.style, styles.card);
-        }}
-      >
-        <img 
-          src={fish.image} 
-          alt={fish.name} 
-          style={styles.image}
-          onClick={() => setShowModal(true)}
+              <button
+                style={styles.toastCloseButton}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  removeToast(toast.id);
+                }}
+              >
+                ×
+              </button>
+              {toast.message}
+            </div>
+          ))}
+        </div>
+
+        <div
+          className="fish-card"
+          style={{ ...styles.card, position: 'relative' }}
           onMouseEnter={(e) => {
-            Object.assign(e.currentTarget.style, {...styles.image, ...styles.imageHover});
+            Object.assign(e.currentTarget.style, styles.cardHover);
           }}
           onMouseLeave={(e) => {
-            Object.assign(e.currentTarget.style, styles.image);
-          }}
-        />
-        
-        <div style={styles.header}>
-          <h6 style={styles.fishName}>{fish.name}</h6>                
-          <p style={styles.price}>{fish.pricePerKg} QAR/kg</p>                
-        </div>
-        
-        <p style={styles.minWeight}>min weight: {fish.minWeight} kg</p>
-
-        <select
-          value={selectedCleaning}
-          onChange={(e) => setSelectedCleaning(e.target.value as CleaningMethod | '')}
-          style={{
-            ...styles.select,
-            ...(selectedCleaning === '' ? styles.selectRequired : {})
-          }}
-          onFocus={(e) => {
-            Object.assign(e.currentTarget.style, {...styles.select, ...styles.selectFocus});
-          }}
-          onBlur={(e) => {
-            Object.assign(e.currentTarget.style, {
-              ...styles.select,
-              ...(selectedCleaning === '' ? styles.selectRequired : {})
-            });
+            Object.assign(e.currentTarget.style, styles.card);
           }}
         >
-          <option value="" disabled>Select cleaning method *</option>
-          {fish.cleaningOptions.map((method) => (
-            <option key={method} value={method}>{method}</option>
-          ))}
-        </select>
-
-        <div 
-          style={styles.controlsContainer} 
-          className="controls-container"
-        >
-          <div 
-            style={styles.quantityContainer}
-            className="quantity-container"
-          >
-            <button 
-              style={styles.quantityButton}
-              onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              onMouseEnter={(e) => {
-                Object.assign(e.currentTarget.style, {...styles.quantityButton, ...styles.quantityButtonHover});
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.currentTarget.style, styles.quantityButton);
-              }}
-            >
-              -
-            </button>
-            <span style={styles.quantityDisplay}>{quantity}</span>
-            <button 
-              style={styles.quantityButton}
-              onClick={() => setQuantity(q => q + 1)}
-              onMouseEnter={(e) => {
-                Object.assign(e.currentTarget.style, {...styles.quantityButton, ...styles.quantityButtonHover});
-              }}
-              onMouseLeave={(e) => {
-                Object.assign(e.currentTarget.style, styles.quantityButton);
-              }}
-            >
-              +
-            </button>
-          </div>
-          
-          <button 
-            style={styles.addToCartButton}
-            className="add-to-cart-button"
-            onClick={handleAddToCart}
+          {isInCart && (
+            <div style={{ position: 'absolute', top: 10, right: 10, fontSize: '1.5rem' }}>
+              🛒
+            </div>
+          )}
+          <img
+            src={fish.image}
+            alt={fish.name}
+            style={styles.image}
+            onClick={() => setShowModal(true)}
             onMouseEnter={(e) => {
-              Object.assign(e.currentTarget.style, {...styles.addToCartButton, ...styles.addToCartButtonHover});
+              Object.assign(e.currentTarget.style, {
+                ...styles.image,
+                ...styles.imageHover
+              });
             }}
             onMouseLeave={(e) => {
-              Object.assign(e.currentTarget.style, styles.addToCartButton);
+              Object.assign(e.currentTarget.style, styles.image);
+            }}
+          />
+          <h6 style={styles.fishName}>{fish.name}</h6>
+          <h6 style={styles.fishNameArabic}>لا يعرض أحد </h6>
+          <div style={styles.header}>
+            <p style={styles.minWeight}>Min weight: {fish.minWeight} kg</p>
+            <p style={styles.price}>{fish.pricePerKg} QR/kg</p>
+          </div>
+
+          <select
+            value={selectedCleaning}
+            onChange={(e) => setSelectedCleaning(e.target.value as CleaningMethod | '')}
+            style={{
+              ...styles.select,
+              ...(selectedCleaning === '' ? styles.selectRequired : {})
+            }}
+            onFocus={(e) => {
+              Object.assign(e.currentTarget.style, {
+                ...styles.select,
+                ...styles.selectFocus
+              });
+            }}
+            onBlur={(e) => {
+              Object.assign(e.currentTarget.style, {
+                ...styles.select,
+                ...(selectedCleaning === '' ? styles.selectRequired : {})
+              });
             }}
           >
-            <i className="fa-solid fa-cart-shopping"></i> Add to cart
-          </button>
+            <option value="" disabled>
+              Select cleaning method *
+            </option>
+            {fish.cleaningOptions.map((method) => (
+              <option key={method} value={method}>
+                {method}
+              </option>
+            ))}
+          </select>
+
+          <div style={styles.controlsContainer}>
+            <div style={styles.quantityContainer}>
+              <span style={styles.quantityDisplay}>Quantity : {quantity}</span>
+              <button
+                style={styles.quantityButton}
+                onClick={() => handleQuantityChange(Math.max(1, quantity - 1))}
+              >
+                -
+              </button>
+              <button
+                style={styles.quantityButton}
+                onClick={() => handleQuantityChange(quantity + 1)}
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
-      </div>
-      
-      {showModal && (
-          <div 
-            style={styles.modal}
-            onClick={() => setShowModal(false)}
-          >
-            <div
-              style={styles.modalContent}
-              onClick={(e) => e.stopPropagation()}
-            >
-              <img 
-                src={fish.image} 
-                alt={fish.name} 
-                style={styles.modalImage}
-              />
+
+        {showModal && (
+          <div style={styles.modal} onClick={() => setShowModal(false)}>
+            <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+              <img src={fish.image} alt={fish.name} style={styles.modalImage} />
               <h3 style={styles.modalTitle}>{fish.name}</h3>
               <p style={styles.modalDescription}>{fish.description}</p>
-              <p style={styles.modalPrice}>{fish.pricePerKg} QAR/kg</p>               
-              <button 
+              <p style={styles.modalPrice}>{fish.pricePerKg} QAR/kg</p>
+              <button
                 style={styles.closeButton}
                 onClick={() => setShowModal(false)}
-                onMouseEnter={(e) => {
-                  Object.assign(e.currentTarget.style, {...styles.closeButton, ...styles.closeButtonHover});
-                }}
-                onMouseLeave={(e) => {
-                  Object.assign(e.currentTarget.style, styles.closeButton);
-                }}
               >
                 Close
               </button>
             </div>
           </div>
         )}
+      </div>
     </>
   );
 };

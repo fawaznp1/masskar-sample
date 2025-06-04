@@ -127,10 +127,10 @@ const Header = () => {
   };
 
   const categories = [
-    { path: "/categories/fish", emoji: "🐟", name: "Fresh Fish" },
-    { path: "/categories/vegetables", emoji: "🥬", name: "Vegetables" },
-    { path: "/categories/fruits", emoji: "🍎", name: "Fresh Fruits" },
-    { path: "/categories/meat", emoji: "🥩", name: "Premium Meat" }
+    { path: "/categories/fish", emoji: "", name: "Fresh Fish" },
+    { path: "/categories/vegetables", emoji: "", name: "Vegetables" },
+    { path: "/categories/fruits", emoji: "", name: "Fresh Fruits" },
+    { path: "/categories/meat", emoji: "", name: "Premium Meat" }
   ];
 
   // Calculate total cart items
@@ -151,7 +151,7 @@ const Header = () => {
               onClick={() => handleNavigation('/')} 
               className="flex items-center space-x-2 flex-shrink-0 group cursor-pointer"
             >
-              <div className="w-8 h-8 lg:w-10 lg:h-10 rounded-lg overflow-hidden transform group-hover:scale-105 transition-transform duration-200">
+              <div className="w-8 h-8 lg:w-12 lg:h-10  overflow-hidden transform group-hover:scale-105 transition-transform duration-200">
                 <img 
                   src="https://masskaronline.com/qfreshstyles/images/formbg.png" 
                   alt="Masskar Logo" 
@@ -321,7 +321,10 @@ const Header = () => {
                 className="flex items-center justify-between w-full p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200"
               >
                 <div className="flex items-center space-x-3">
-                  <span className="text-lg">🛒</span>
+                  <span className="text-lg" onClick={() => {
+                  handleNavigation('/cart');
+                  setMenuOpen(false);
+                }}>🛒</span>
                   <span className="font-medium">Shopping Cart</span>
                 </div>
                 <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 font-medium min-w-6 text-center">
@@ -438,7 +441,7 @@ const Header = () => {
         )}
       </header>
 
-        <div className="bg-gradient-to-r from-green-600 to-green-500 text-white py-1 mt-16 lg:mt-20">
+        <div className=" py-1 mt-16 lg:mt-20">
           <div className="animate-marquee whitespace-nowrap">
             <span className="text-sm- font-medium text-black">
               <marquee behavior="" direction="">  📞 +91 9874563210 • ✉️ masskar@gmail.com • 🚚 Free delivery on orders above QR 100</marquee>
@@ -447,16 +450,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* <style jsx>{`
-          @keyframes marquee {
-            0% { transform: translate3d(100%, 0, 0); }
-            100% { transform: translate3d(-100%, 0, 0); }
-          }
-          
-          .animate-marquee {
-            animation: marquee 20s linear infinite;
-          }
-        `}</style> */}
+
     </>
   );
 };

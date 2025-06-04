@@ -12,6 +12,7 @@ import Cart from './components/Cart';
 
 function App() {
   return (
+    
      <BrowserRouter>
      <Header />
       <Routes>
