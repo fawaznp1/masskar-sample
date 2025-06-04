@@ -1,5 +1,4 @@
 
-/* Auth Wrapper */
 .auth-wrapper {
   min-height: 100vh;
   display: flex;
@@ -9,7 +8,6 @@
 /*   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
  */}
 
-/* Main Container */
 .auth-main-container {
   width: 100%;
   margin-top: 3rem;
@@ -23,7 +21,7 @@
   border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
-/* Form Wrapper */
+
 .auth-form-wrapper {
   transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -51,13 +49,13 @@
   transform: translateX(100%);
 }
 
-/* Form Styles */
+
 .auth-login-form,
 .auth-signup-form {
   padding: 2.5rem 2rem;
 }
 
-/* Titles */
+
 .auth-login-title,
 .auth-signup-title {
   font-size: 2rem;
@@ -70,13 +68,13 @@
   background-clip: text;
 }
 
-/* Input Groups */
+
 .auth-input-group {
   margin-bottom: 1.5rem;
   position: relative;
 }
 
-/* Input Styles */
+
 .auth-input {
   width: 100%;
   padding: 1rem 1.25rem;
@@ -110,7 +108,7 @@
   font-weight: 400;
 }
 
-/* Error Messages */
+
 .error-message {
   color: #ef4444;
   font-size: 0.875rem;
@@ -119,7 +117,6 @@
   font-weight: 500;
 }
 
-/* Submit Buttons */
 .auth-submit-btn {
   width: 100%;
   padding: 1rem;
@@ -166,7 +163,7 @@
   left: 100%;
 }
 
-/* Footer */
+
 .auth-footer {
   margin-top: 2rem;
   text-align: center;
@@ -198,7 +195,7 @@
   cursor: not-allowed;
 }
 
-/* Home Page Styles */
+
 .home-container {
   min-height: 100vh;
   display: flex;
@@ -270,7 +267,7 @@
   font-weight: 600;
 }
 
-/* Action Buttons */
+
 .action-buttons {
   display: flex;
   gap: 1rem;
@@ -314,7 +311,7 @@
   transform: translateY(0);
 }
 
-/* Responsive Design */
+
 @media (max-width: 480px) {
   .auth-main-container {
     max-width: 100%;
@@ -356,7 +353,7 @@
   }
 }
 
-/* Loading Animation */
+
 @keyframes pulse {
   0%, 100% {
     opacity: 1;
@@ -370,7 +367,7 @@
   animation: pulse 1.5s ease-in-out infinite;
 }
 
-/* Focus Styles for Accessibility */
+
 .auth-input:focus-visible,
 .auth-submit-btn:focus-visible,
 .auth-toggle-link:focus-visible,
@@ -380,7 +377,7 @@
   outline-offset: 2px;
 }
 
-/* Success/Error Animations */
+
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
   10%, 30%, 50%, 70%, 90% { transform: translateX(-10px); }
@@ -391,13 +388,13 @@
   animation: shake 0.5s ease-in-out;
 }
 
-/* Smooth Transitions */
+
 * {
   transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease, 
               box-shadow 0.3s ease, transform 0.3s ease;
 }
 
-/* Data persistence indicator */
+
 .data-indicator {
   position: fixed;
   top: 1rem;

@@ -63,7 +63,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Company */}
+    
           <div className="group">
             <h3 className="text-xl font-bold text-white mb-6 relative">
               Company
@@ -83,7 +83,7 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact */}
+          
           <div className="group">
             <h3 className="text-xl font-bold text-white mb-6 relative">
               Contact
@@ -112,13 +112,13 @@ const Footer = () => {
           </div>
         </div>
 
-        {/* Divider */}
+        
         <div className="border-t border-gradient-to-r from-transparent via-gray-700 to-transparent mb-8">
           <div className="h-px bg-gradient-to-r from-transparent via-gray-600 to-transparent"></div>
         </div>
 
       
-        {/* Copyright */}
+      
         <div className="text-center">
           <div className="inline-block">
             <a 

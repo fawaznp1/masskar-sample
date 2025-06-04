@@ -128,7 +128,7 @@ const AuthForm = () => {
       newErrors.confirmPassword = 'Passwords do not match';
     }
 
-    // Check if email already exists
+    
     const existingUsers = getAllUsers();
     if (existingUsers.find(u => u.email === signupData.email)) {
       newErrors.email = 'Email already exists,Please login';
@@ -140,7 +140,7 @@ const AuthForm = () => {
       return;
     }
 
-    // Simulate API call delay
+
     setTimeout(() => {
       const newUser = {
         id: Date.now(),
@@ -150,11 +150,11 @@ const AuthForm = () => {
         createdAt: new Date().toISOString()
       };
 
-      // Get existing users and add new user
+      
       const users = getAllUsers();
       users.push(newUser);
       
-      // Save to localStorage
+      
       saveUsers(users);
       saveCurrentUser(newUser);
       
@@ -162,7 +162,7 @@ const AuthForm = () => {
       setIsAuthenticated(true);
       console.log('Account created successfully:', newUser);
       
-      // Clear form data
+      
       setSignupData({ fullName: '', email: '', password: '', confirmPassword: '' });
       setLoading(false);
       navigate('/');
@@ -172,7 +172,7 @@ const AuthForm = () => {
   const handleLoginInputChange = (e) => {
     const { name, value } = e.target;
     setLoginData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
@@ -181,18 +181,17 @@ const AuthForm = () => {
   const handleSignupInputChange = (e) => {
     const { name, value } = e.target;
     setSignupData(prev => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
+    
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
   };
 
   const handleLogout = () => {
-    // Remove current user from localStorage
+   
     localStorage.removeItem('currentUser');
 
     
-    // Reset state
     setIsAuthenticated(false);
     setCurrentUser(null);
     setLoginData({ email: '', password: '' });
@@ -202,7 +201,7 @@ const AuthForm = () => {
     console.log('User logged out successfully');
   };
 
-  // Clear all data function (for testing purposes only- ONLY)
+  
   const handleClearAllData = () => {
     localStorage.removeItem('users');
     localStorage.removeItem('currentUser');
@@ -213,44 +212,13 @@ const AuthForm = () => {
 
   if (isAuthenticated && currentUser) {
     const allUsers = getAllUsers();
-   /*  return (
-      <div className="home-container">
-        <div className="home-content">
-          <h1 className="welcome-title">Welcome, {currentUser.fullName}!</h1>
-          <p className="welcome-message">You have successfully logged in to your dashboard.</p>
-          
-          <div className="user-info">
-            <h3>Your Account Information</h3>
-            <div className="user-details">
-              <p><strong>Name:</strong> {currentUser.fullName}</p>
-              <p><strong>Email:</strong> {currentUser.email}</p>
-              <p><strong>Account Created:</strong> {new Date(currentUser.createdAt).toLocaleDateString()}</p>
-              <p><strong>User ID:</strong> {currentUser.id}</p>
-            </div>
-          </div>
-
-          <div className="stats-info">
-            <h3>Platform Statistics</h3>
-            <p>Total Registered Users: <strong>{allUsers.length}</strong></p>
-          </div>
-
-          <div className="action-buttons">
-            <button onClick={handleLogout} className="logout-btn">
-              Logout
-            </button>
-            
-          </div>
-        </div>
-      </div>
-    );
- */
-    
+  
   }
 
   return (
     <div className="auth-wrapper">
       <div className="auth-main-container">
-        {/* Login Form */}
+        
         <div className={`auth-form-wrapper login-form-wrapper ${
           showLogin ? "active" : "inactive"
         }`}>
@@ -309,7 +277,7 @@ const AuthForm = () => {
           </div>
         </div>
 
-        {/* Signup Form */}
+        
         <div className={`auth-form-wrapper signup-form-wrapper ${
           !showLogin ? "active" : "inactive"
         }`}>

@@ -23,10 +23,8 @@ const FishList: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Sort fishData by price in ascending order 
   const sortedFishData = [...fishData].sort((a, b) => a.pricePerKg - b.pricePerKg);
 
-  // Determine which data to display
   const displayData = activeTab === 'Low Price' ? sortedFishData : fishData;
 
   return (

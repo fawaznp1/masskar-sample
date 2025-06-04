@@ -20,7 +20,6 @@ const Cart: React.FC = () => {
       if (storedCart) {
         const items = JSON.parse(storedCart);
 
-        // Merge duplicate items by fish.id and cleaningMethod
         const mergedItems: any[] = [];
         items.forEach((newItem: any) => {
           const existingIndex = mergedItems.findIndex(
@@ -141,7 +140,7 @@ const Cart: React.FC = () => {
                     <h3 className="">{item.fish.name}</h3>
                     <p className='text-sm'>Cleaning: {item.cleaningMethod || 'Not specified'}</p>
                     <p className="text-sm text-gray-600">
-                      {item.quantity} x {item.fish.minWeight} kg {/* x {item.fish.pricePerKg} QR/kg */}
+                      {item.quantity} x {item.fish.minWeight} kg
                     </p>
                   </div>
                   <div className="text-right">

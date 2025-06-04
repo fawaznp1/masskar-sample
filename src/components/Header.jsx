@@ -22,12 +22,12 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Close mobile menu if clicked outside
+ 
       if (menuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.mobile-toggle')) {
         setMenuOpen(false);
       }
       
-      // Close categories dropdown if clicked outside
+      
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setCategoriesOpen(false);
       }
@@ -38,7 +38,7 @@ const Header = () => {
   }, [menuOpen]);
 
   useEffect(() => {
-    // Function to check and update user data from localStorage
+  
     const checkUserData = () => {
       const userData = localStorage.getItem('currentUser');
       if (userData) {
@@ -55,10 +55,9 @@ const Header = () => {
       }
     };
 
-    // Check on mount
+   
     checkUserData();
 
-    // Listen for storage changes (when localStorage is updated in other tabs/windows)
     window.addEventListener('storage', checkUserData);
     window.addEventListener('focus', checkUserData);
     window.addEventListener('userUpdated', checkUserData);
@@ -71,7 +70,7 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-    // Function to check and update cart data from localStorage
+   
     const checkCartData = () => {
       const cartData = localStorage.getItem('cartItems');
       if (cartData) {
@@ -88,10 +87,9 @@ const Header = () => {
       }
     };
 
-    // Check on mount
+  
     checkCartData();
 
-    // Listen for storage changes (when localStorage is updated in other tabs/windows)
     window.addEventListener('storage', checkCartData);
     window.addEventListener('focus', checkCartData);
     window.addEventListener('cartUpdated', checkCartData);
@@ -104,7 +102,7 @@ const Header = () => {
   }, []);
 
   const loginOnClick = () => {
-    // Navigate to login - replace with your routing logic
+    
     window.location.href = '/login';
   };
 
@@ -117,7 +115,7 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to search - replace with your routing logic
+      
       window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
@@ -133,7 +131,7 @@ const Header = () => {
     { path: "/categories/meat", emoji: "", name: "Premium Meat" }
   ];
 
-  // Calculate total cart items
+
   const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
 
   return (
@@ -146,7 +144,7 @@ const Header = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
             
-            {/* Logo */}
+           
             <div 
               onClick={() => handleNavigation('/')} 
               className="flex items-center space-x-2 flex-shrink-0 group cursor-pointer"
@@ -164,7 +162,7 @@ const Header = () => {
               </span>
             </div>
 
-            {/* Desktop Navigation */}
+           
             <nav className="hidden lg:flex items-center space-x-1">
               <button 
                 onClick={() => handleNavigation('/')}
@@ -185,7 +183,7 @@ const Header = () => {
                 Locations
               </button>
 
-              {/* Categories Dropdown */}
+           
               <div className="relative" ref={dropdownRef}>
                 <button 
                   className="flex items-center space-x-1 px-4 py-2 rounded-lg text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 font-medium"
@@ -223,7 +221,6 @@ const Header = () => {
               </div>
             </nav>
 
-            {/* Search Bar */}
             <div className="hidden md:flex flex-1 max-w-md mx-4 lg:mx-8">
               <form onSubmit={handleSearch} className="relative w-full">
                 <div className="relative">
@@ -239,9 +236,9 @@ const Header = () => {
               </form>
             </div>
 
-            {/* Header Actions */}
+          
             <div className="flex items-center space-x-2 lg:space-x-4">
-              {/* Cart Button - Conditionally rendered */}
+           
               {cartItemCount > 0 && (
                 <button 
                   onClick={() => handleNavigation('/cart')}
@@ -254,7 +251,7 @@ const Header = () => {
                 </button>
               )}
               
-              {/* User Section */}
+              
               {user ? (
                 <div className="hidden lg:flex items-center space-x-3 pl-4 border-l border-gray-200">
                   <div className="flex items-center space-x-2">
@@ -279,7 +276,6 @@ const Header = () => {
                 </button>
               )}
 
-              {/* Mobile Menu Toggle */}
               <button 
                 className="lg:hidden p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200 mobile-toggle"
                 onClick={() => setMenuOpen(!menuOpen)}
@@ -291,13 +287,13 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        
         <div className={`lg:hidden fixed inset-x-0 top-16 bg-white border-t border-gray-100 shadow-lg transition-all duration-300 mobile-menu ${
           menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
         }`}>
           <div className="max-w-md mx-auto p-4 space-y-4">
             
-            {/* Mobile Search */}
+           
             <form onSubmit={handleSearch} className="md:hidden">
               <div className="relative">
                 <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -311,7 +307,6 @@ const Header = () => {
               </div>
             </form>
 
-            {/* Mobile Cart Button - Conditionally rendered */}
             {cartItemCount > 0 && (
               <button 
                 onClick={() => {
@@ -333,7 +328,7 @@ const Header = () => {
               </button>
             )}
 
-            {/* Mobile Navigation */}
+           
             <nav className="space-y-2">
               <button 
                 onClick={() => {
@@ -368,7 +363,6 @@ const Header = () => {
                 <span className="font-medium">Delivery Locations</span>
               </button>
 
-              {/* Mobile Categories */}
               <div className="space-y-2">
                 <button 
                   className="flex items-center justify-between w-full p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200"
@@ -403,7 +397,6 @@ const Header = () => {
               </div>
             </nav>
 
-            {/* Mobile User Section */}
             <div className="pt-4 border-t border-gray-100">
               {user ? (
                 <div className="space-y-3">
@@ -432,7 +425,7 @@ const Header = () => {
           </div>
         </div>
 
-        {/* Mobile Overlay */}
+       
         {menuOpen && (
           <div 
             className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[-1]"

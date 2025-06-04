@@ -48,7 +48,6 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
   const [isInCart, setIsInCart] = useState(false);
 
   useEffect(() => {
-    // Backup and restore cart items mechanism
     const handleBeforeUnload = () => {
       const cartItems = localStorage.getItem('cartItems');
       if (cartItems) {
@@ -66,7 +65,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
     window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('load', handleLoad);
 
-    // Check if item is in cart
+   
     const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
     const isItemInCart = existingCartItems.some(item => item.fish.id === fish.id);
     setIsInCart(isItemInCart);
