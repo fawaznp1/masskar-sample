@@ -576,6 +576,87 @@ Total Price: ${totalPrice.toFixed(2)} QAR
             </div>
           </div>
         )}
+        <style>
+          {`
+            @keyframes modalFadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            
+            @keyframes modalSlideIn {
+              from { 
+                opacity: 0; 
+                transform: translateY(-30px) scale(0.9); 
+              }
+              to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+              }
+            }
+
+            @keyframes toastSlideIn {
+              from { 
+                opacity: 0; 
+                transform: translateX(100%); 
+              }
+              to { 
+                opacity: 1; 
+                transform: translateX(0); 
+              }
+            }
+            
+            .fish-card {
+              position: relative;
+            }
+            
+            .fish-card::before {
+              content: "";
+              position: absolute;
+              top: 0;
+              left: -100%;
+              width: 100%;
+              height: 100%;
+              background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+              transition: left 0.6s ease-in-out;
+              z-index: 1;
+            }
+            
+            .fish-card:hover::before {
+              left: 100%;
+            }
+
+            @media (max-width: 768px) {
+              .fish-card {
+                width: 85% !important;
+                margin: 8px 25px !important;
+              }
+            }
+
+            @media (max-width: 480px) {
+              .controls-container {
+                flex-direction: column !important;
+                gap: 12px !important;
+              }
+              
+              .quantity-container {
+                align-self: center !important;
+              }
+              
+              .add-to-cart-button {
+                width: 50% !important;
+                min-width: unset !important;
+              }
+
+              .toast-container {
+                top: 10px !important;
+                right: 10px !important;
+                left: 10px !important;
+                max-width: none !important;
+              }
+            }
+          `}
+        </style>
+        
       </div>
     </>
   );
