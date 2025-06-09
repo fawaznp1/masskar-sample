@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import './fishCard.css'
 
-type CleaningMethod = 'Headless' | 'Gutted' | 'Fillet' | 'Steaks' | 'Whole';
+type CleaningMethod = 'Trimmed' | 'Bone-in' | 'Boneless' | 'Chopped';
 
-type FishData = {
+type MeatData = {
   id: number;
   name: string;
   image: string;
@@ -15,7 +15,7 @@ type FishData = {
 
 type CartItem = {
   id: string;
-  fish: FishData;
+  meat: MeatData;
   quantity: number;
   weight: number;
   cleaningMethod: CleaningMethod;
@@ -23,10 +23,10 @@ type CartItem = {
   createdAt: string;
 };
 
-type FishCardProps = {
-  fish: FishData;
+type MeatCardProps = {
+  meat?: MeatData; // Made optional
   onAddToCart: (item: {
-    fish: FishData;
+    meat: MeatData;
     quantity: number;
     weight: number;
     cleaningMethod: CleaningMethod;
@@ -40,14 +40,32 @@ type Toast = {
   type: 'success' | 'error' | 'warning';
 };
 
-const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogin }) => {
+const MeatCard: React.FC<MeatCardProps> = ({ meat, onAddToCart, onNavigateToLogin }) => {
+  // Provide default values for meat
+  const safeMeat = meat || {
+    id: 0,
+    name: 'Product',
+    image: '',
+    pricePerKg: 0,
+    minWeight: 1,
+    description: '',
+    cleaningOptions: []
+  };
+
   const [quantity, setQuantity] = useState<number>(1);
   const [selectedCleaning, setSelectedCleaning] = useState<CleaningMethod | ''>('');
   const [showModal, setShowModal] = useState(false);
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [isInCart, setIsInCart] = useState(false);
+  const [isLoading, setIsLoading] = useState(!meat);
 
   useEffect(() => {
+    if (!meat) {
+      setIsLoading(true);
+      return;
+    }
+    setIsLoading(false);
+
     const handleBeforeUnload = () => {
       const cartItems = localStorage.getItem('cartItems');
       if (cartItems) {
@@ -65,16 +83,15 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
     window.addEventListener('beforeunload', handleBeforeUnload);
     window.addEventListener('load', handleLoad);
 
-   
     const existingCartItems = JSON.parse(localStorage.getItem('cartItems') || '[]') as CartItem[];
-    const isItemInCart = existingCartItems.some(item => item.fish.id === fish.id);
+    const isItemInCart = existingCartItems.some(item => item?.meat?.id === safeMeat.id);
     setIsInCart(isItemInCart);
 
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
       window.removeEventListener('load', handleLoad);
     };
-  }, [fish.id]);
+  }, [safeMeat.id, meat]);
 
   const showToast = (message: string, type: 'success' | 'error' | 'warning' = 'success') => {
     const id = Date.now().toString();
@@ -91,6 +108,11 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
   };
 
   const handleAddToCart = () => {
+    if (!safeMeat.id) {
+      showToast('Product data not available', 'error');
+      return;
+    }
+
     const currentUser = localStorage.getItem('currentUser');
     if (!currentUser) {
       if (onNavigateToLogin) {
@@ -109,12 +131,12 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
       return;
     }
 
-    const totalWeight = fish.minWeight * quantity;
-    const totalPrice = fish.pricePerKg * totalWeight;
+    const totalWeight = safeMeat.minWeight * quantity;
+    const totalPrice = safeMeat.pricePerKg * totalWeight;
 
     const cartItem: CartItem = {
-      id: `${fish.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-      fish,
+      id: `${safeMeat.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      meat: safeMeat,
       quantity,
       weight: totalWeight,
       cleaningMethod: selectedCleaning as CleaningMethod,
@@ -127,7 +149,7 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
     localStorage.setItem('cartItems', JSON.stringify(updatedCartItems));
 
     onAddToCart({
-      fish,
+      meat: safeMeat,
       quantity,
       weight: totalWeight,
       cleaningMethod: selectedCleaning as CleaningMethod
@@ -136,11 +158,11 @@ const FishCard: React.FC<FishCardProps> = ({ fish, onAddToCart, onNavigateToLogi
     setIsInCart(true);
 
     const toastMessage = `Added to cart:
-Fish: ${fish.name}
+Meat: ${safeMeat.name}
 Quantity: ${quantity}
 Weight: ${totalWeight} kg
 Cleaning Method: ${selectedCleaning}
-Price per kg: ${fish.pricePerKg} QAR
+Price per kg: ${safeMeat.pricePerKg} QAR
 Total Price: ${totalPrice.toFixed(2)} QAR
 `;
     showToast(toastMessage, 'success');
@@ -151,18 +173,19 @@ Total Price: ${totalPrice.toFixed(2)} QAR
     const storedCart = localStorage.getItem('cart');
     let cart = storedCart ? JSON.parse(storedCart) : [];
 
-    const fishIndex = cart.findIndex(
-      (item: any) => item.id === fish.id && item.cleaningMethod === selectedCleaning
+    const meatIndex = cart.findIndex(
+      (item: any) => item?.id === safeMeat.id && item.cleaningMethod === selectedCleaning
     );
 
-    if (fishIndex !== -1) {
-      cart[fishIndex].quantity = newQuantity;
+    if (meatIndex !== -1) {
+      cart[meatIndex].quantity = newQuantity;
       localStorage.setItem('cart', JSON.stringify(cart));
     }
 
     handleAddToCart();
   };
 
+  // Styles remain the same as in your original code
    const styles = {
     card: {
       justifyContent: 'center',
@@ -223,18 +246,17 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       flexWrap: 'wrap' as const,
       gap: '8px'
     },
-    fishName: {
+    meatName: {
        fontSize: 'clamp(16px, 4vw, 10px)',
-   
       margin: '0 2px 5px 9px',
       display: 'flex',
       justifyContent: 'center', 
       minWidth: '80px'
     },
-    fishNameArabic:{
+    meatNameArabic:{
       fontSize: 'clamp(16px, 4vw, 10px)',
       fontfamily: 'Rubik, sans-serif',
-            fontWeight: '400',
+      fontWeight: '400',
       margin: '0 auto',
       display: 'flex',
       justifyContent: 'center', 
@@ -304,8 +326,7 @@ Total Price: ${totalPrice.toFixed(2)} QAR
       width: 'clamp(26px, 8vw, 20px)',
       height: 'clamp(26px, 8vw, 20px)',
       margin:'2px',
-    
-       border: '1px solid #e8ecef',
+      border: '1px solid #e8ecef',
       borderColor: '#15803d',
       color: '#000',
       fontSize: 'clamp(14px, 4vw, 10px)',
@@ -320,7 +341,6 @@ Total Price: ${totalPrice.toFixed(2)} QAR
     quantityDisplay: {
       margin: '0 12px',
       fontSize: 'clamp(14px, 4vw, 12px)',
-    
       color: '#2c3e50', 
       minWidth: '5px',
       textAlign: 'center' as const
@@ -447,6 +467,14 @@ Total Price: ${totalPrice.toFixed(2)} QAR
     }
   };
 
+  if (isLoading) {
+    return (
+      <div style={{ ...styles.card, justifyContent: 'center', alignItems: 'center' }}>
+        <div>Loading product...</div>
+      </div>
+    );
+  }
+
   return (
     <>
       <div>
@@ -479,9 +507,8 @@ Total Price: ${totalPrice.toFixed(2)} QAR
         </div>
 
         <div
-          className="fish-card"
+          className="meat-card"
           style={{ ...styles.card, position: 'relative' }}
-          
         >
           {isInCart && (
             <div style={{ position: 'absolute', top: 10, right: 10, fontSize: '1.5rem',color:'teal' }}>
@@ -489,8 +516,8 @@ Total Price: ${totalPrice.toFixed(2)} QAR
             </div>
           )}
           <img
-            src={fish.image}
-            alt={fish.name}
+            src={safeMeat.image || '/placeholder.jpg'}
+            alt={safeMeat.name}
             style={styles.image}
             onClick={() => setShowModal(true)}
             onMouseEnter={(e) => {
@@ -503,11 +530,11 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               Object.assign(e.currentTarget.style, styles.image);
             }}
           />
-          <h6 style={styles.fishName} className='fishName'>{fish.name}</h6>
-          <h6 style={styles.fishNameArabic} className='fishName'>لا يعرض أحد </h6>
+          <h6 style={styles.meatName} className='meatName'>{safeMeat.name}</h6>
+          <h6 style={styles.meatNameArabic} className='meatName'>لا يعرض أحد </h6>
           <div style={styles.header}>
-            <p style={styles.minWeight}>Min weight: {fish.minWeight} kg</p>
-            <p style={styles.price}>{fish.pricePerKg} QR/kg</p>
+            <p style={styles.minWeight}>Min weight: {safeMeat.minWeight} kg</p>
+            <p style={styles.price}>{safeMeat.pricePerKg} QR/kg</p>
           </div>
 
           <select
@@ -530,10 +557,10 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               });
             }}
           >
-            <option value="" disabled >
+            <option value="" disabled>
               Select cleaning method *
             </option>
-            {fish.cleaningOptions.map((method) => (
+            {safeMeat.cleaningOptions.map((method) => (
               <option key={method} value={method}>
                 {method}
               </option>
@@ -562,10 +589,10 @@ Total Price: ${totalPrice.toFixed(2)} QAR
         {showModal && (
           <div style={styles.modal} onClick={() => setShowModal(false)}>
             <div style={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-              <img src={fish.image} alt={fish.name} style={styles.modalImage} />
-              <h3 style={styles.modalTitle}>{fish.name}</h3>
-              <p style={styles.modalDescription}>{fish.description}</p>
-              <p style={styles.modalPrice}>{fish.pricePerKg} QAR/kg</p>
+              <img src={safeMeat.image} alt={safeMeat.name} style={styles.modalImage} />
+              <h3 style={styles.modalTitle}>{safeMeat.name}</h3>
+              <p style={styles.modalDescription}>{safeMeat.description}</p>
+              <p style={styles.modalPrice}>{safeMeat.pricePerKg} QAR/kg</p>
               <button
                 style={styles.closeButton}
                 onClick={() => setShowModal(false)}
@@ -604,11 +631,11 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               }
             }
             
-            .fish-card {
+            .meat-card {
               position: relative;
             }
             
-            .fish-card::before {
+            .meat-card::before {
               content: "";
               position: absolute;
               top: 0;
@@ -620,12 +647,12 @@ Total Price: ${totalPrice.toFixed(2)} QAR
               z-index: 1;
             }
             
-            .fish-card:hover::before {
+            .meat-card:hover::before {
               left: 100%;
             }
 
             @media (max-width: 768px) {
-              .fish-card {
+              .meat-card {
                 width: 85% !important;
                 margin: 8px 25px !important;
               }
@@ -655,10 +682,9 @@ Total Price: ${totalPrice.toFixed(2)} QAR
             }
           `}
         </style>
-        
       </div>
     </>
   );
 };
 
-export default FishCard;
+export default MeatCard;

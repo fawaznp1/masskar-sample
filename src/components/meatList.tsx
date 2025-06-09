@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import fishData from './fishData';
-import FishCard from './fishCard';
+import meatData from './meatData';
+import MeatCard from './meatCard';
 import Cart from './Cart';
 import { Button } from '@mui/material';
 
-const FishList: React.FC = () => {
+const MeatList: React.FC = () => {
   const [showCart, setShowCart] = useState(false);
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [activeTab, setActiveTab] = useState('All');
 
-  const handleAddToCart = (item: { fish: any; quantity: number; cleaningMethod: string }) => {
+  const handleAddToCart = (item: { meat: any; quantity: number; cleaningMethod: string }) => {
     console.log('Added to cart:', item);
   };
 
@@ -23,9 +23,9 @@ const FishList: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const sortedFishData = [...fishData].sort((a, b) => a.pricePerKg - b.pricePerKg);
+  const sortedMeatData = [...meatData].sort((a, b) => a.pricePerKg - b.pricePerKg);
 
-  const displayData = activeTab === 'Low Price' ? sortedFishData : fishData;
+  const displayData = activeTab === 'Low Price' ? sortedMeatData : meatData;
 
   return (
     <div style={{
@@ -102,8 +102,8 @@ const FishList: React.FC = () => {
               <div className="text-gray-400 text-lg font-medium">Currently we have no offers</div>
             </div>
           ) : (
-            displayData.map((fish) => (
-              <FishCard key={fish.id} fish={fish} onAddToCart={handleAddToCart} />
+            displayData.map((meat) => (
+              <MeatCard key={meat.id} meat={meat} onAddToCart={handleAddToCart} />
             ))
           )}
         </div>
@@ -139,4 +139,4 @@ const FishList: React.FC = () => {
   );
 };
 
-export default FishList;
+export default MeatList;

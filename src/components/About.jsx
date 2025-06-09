@@ -3,7 +3,8 @@ import React from 'react'
 function About() {
   return (
     <div>
-         <section id="about" className="bg-white mt-10 py-12 px-6 md:px-12 lg:px-20">
+         <section id="about" className="bg-white mt-2 py-12 px-6 md:px-12 lg:px-20">
+           <img src="https://masskaronline.com/uploads/images/banner/msskar%20Comes%20you%20Yellow1.jpg"  style={{width:'80%',display:'block',margin:'0 auto'}} alt="banner img" />
       <div className="max-w-5xl mx-auto">
         <h2 className="text-3xl font-bold text-green-800 mb-6">About</h2>
         <p className="text-gray-600 leading-relaxed mb-4">
@@ -17,6 +18,7 @@ function About() {
         </p>
       </div>
     </section>
+   
     </div>
   )
 }

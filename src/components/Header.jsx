@@ -22,11 +22,9 @@ const Header = () => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
- 
       if (menuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.mobile-toggle')) {
         setMenuOpen(false);
       }
-      
       
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setCategoriesOpen(false);
@@ -38,7 +36,6 @@ const Header = () => {
   }, [menuOpen]);
 
   useEffect(() => {
-  
     const checkUserData = () => {
       const userData = localStorage.getItem('currentUser');
       if (userData) {
@@ -55,7 +52,6 @@ const Header = () => {
       }
     };
 
-   
     checkUserData();
 
     window.addEventListener('storage', checkUserData);
@@ -70,7 +66,6 @@ const Header = () => {
   }, []);
 
   useEffect(() => {
-   
     const checkCartData = () => {
       const cartData = localStorage.getItem('cartItems');
       if (cartData) {
@@ -87,7 +82,6 @@ const Header = () => {
       }
     };
 
-  
     checkCartData();
 
     window.addEventListener('storage', checkCartData);
@@ -102,7 +96,6 @@ const Header = () => {
   }, []);
 
   const loginOnClick = () => {
-    
     window.location.href = '/login';
   };
 
@@ -115,7 +108,6 @@ const Header = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      
       window.location.href = `/search?q=${encodeURIComponent(searchQuery.trim())}`;
     }
   };
@@ -125,12 +117,11 @@ const Header = () => {
   };
 
   const categories = [
-    { path: "/categories/fish", emoji: "", name: "Fresh Fish" },
+    { path: "/", emoji: "", name: "Fresh Fish" },
     { path: "/categories/vegetables", emoji: "", name: "Vegetables" },
     { path: "/categories/fruits", emoji: "", name: "Fresh Fruits" },
-    { path: "/categories/meat", emoji: "", name: "Premium Meat" }
+    { path: "/meatcard", emoji: "", name: "Premium Meat" }
   ];
-
 
   const cartItemCount = cartItems.reduce((total, item) => total + (item.quantity || 1), 0);
 
@@ -143,13 +134,11 @@ const Header = () => {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16 lg:h-20">
-            
-           
             <div 
               onClick={() => handleNavigation('/')} 
               className="flex items-center space-x-2 flex-shrink-0 group cursor-pointer"
             >
-              <div className="w-8 h-8 lg:w-12 lg:h-10  overflow-hidden transform group-hover:scale-105 transition-transform duration-200">
+              <div className="w-8 h-8 lg:w-12 lg:h-10 overflow-hidden transform group-hover:scale-105 transition-transform duration-200">
                 <img 
                   src="https://masskaronline.com/qfreshstyles/images/formbg.png" 
                   alt="Masskar Logo" 
@@ -162,7 +151,6 @@ const Header = () => {
               </span>
             </div>
 
-           
             <nav className="hidden lg:flex items-center space-x-1">
               <button 
                 onClick={() => handleNavigation('/')}
@@ -183,7 +171,6 @@ const Header = () => {
                 Locations
               </button>
 
-           
               <div className="relative" ref={dropdownRef}>
                 <button 
                   className="flex items-center space-x-1 px-4 py-2 rounded-lg text-gray-700 hover:text-green-600 hover:bg-green-50 transition-all duration-200 font-medium"
@@ -213,7 +200,6 @@ const Header = () => {
                       }}
                       className="flex items-center space-x-3 px-4 py-3 text-gray-700 hover:bg-green-50 hover:text-green-600 transition-colors duration-200 border-b border-gray-50 last:border-b-0 w-full text-left"
                     >
-                      <span className="text-lg">{category.emoji}</span>
                       <span className="font-medium">{category.name}</span>
                     </button>
                   ))}
@@ -236,9 +222,7 @@ const Header = () => {
               </form>
             </div>
 
-          
             <div className="flex items-center space-x-2 lg:space-x-4">
-           
               {cartItemCount > 0 && (
                 <button 
                   onClick={() => handleNavigation('/cart')}
@@ -250,7 +234,6 @@ const Header = () => {
                   </span>
                 </button>
               )}
-              
               
               {user ? (
                 <div className="hidden lg:flex items-center space-x-3 pl-4 border-l border-gray-200">
@@ -278,7 +261,10 @@ const Header = () => {
 
               <button 
                 className="lg:hidden p-2 text-gray-600 hover:text-green-600 hover:bg-green-50 rounded-xl transition-all duration-200 mobile-toggle"
-                onClick={() => setMenuOpen(!menuOpen)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setMenuOpen(!menuOpen);
+                }}
                 aria-label="Toggle Menu"
               >
                 {menuOpen ? <FaTimes className="text-xl" /> : <FaBars className="text-xl" />}
@@ -286,164 +272,91 @@ const Header = () => {
             </div>
           </div>
         </div>
-
-        
-        <div className={`lg:hidden fixed inset-x-0 top-16 bg-white border-t border-gray-100 shadow-lg transition-all duration-300 mobile-menu ${
-          menuOpen ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
-        }`}>
-          <div className="max-w-md mx-auto p-4 space-y-4">
-            
-           
-            <form onSubmit={handleSearch} className="md:hidden">
-              <div className="relative">
-                <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                <input
-                  type="text"
-                  placeholder="Search products..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent"
-                />
-              </div>
-            </form>
-
-            {cartItemCount > 0 && (
-              <button 
-                onClick={() => {
-                  handleNavigation('/cart');
-                  setMenuOpen(false);
-                }}
-                className="flex items-center justify-between w-full p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200"
-              >
-                <div className="flex items-center space-x-3">
-                  <span className="text-lg" onClick={() => {
-                  handleNavigation('/cart');
-                  setMenuOpen(false);
-                }}>🛒</span>
-                  <span className="font-medium">Shopping Cart</span>
-                </div>
-                <span className="bg-red-500 text-white text-xs rounded-full px-2 py-1 font-medium min-w-6 text-center">
-                  {cartItemCount > 99 ? '99+' : cartItemCount}
-                </span>
-              </button>
-            )}
-
-           
-            <nav className="space-y-2">
-              <button 
-                onClick={() => {
-                  handleNavigation('/');
-                  setMenuOpen(false);
-                }}
-                className="flex items-center space-x-3 p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200 w-full text-left"
-              >
-                <span className="text-lg">🏠</span>
-                <span className="font-medium">Home</span>
-              </button>
-              
-              <button 
-                onClick={() => {
-                  handleNavigation('/about');
-                  setMenuOpen(false);
-                }}
-                className="flex items-center space-x-3 p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200 w-full text-left"
-              >
-                <span className="text-lg">ℹ️</span>
-                <span className="font-medium">About</span>
-              </button>
-              
-              <button 
-                onClick={() => {
-                  handleNavigation('/locations');
-                  setMenuOpen(false);
-                }}
-                className="flex items-center space-x-3 p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200 w-full text-left"
-              >
-                <span className="text-lg">🚚</span>
-                <span className="font-medium">Delivery Locations</span>
-              </button>
-
-              <div className="space-y-2">
-                <button 
-                  className="flex items-center justify-between w-full p-3 text-gray-700 hover:bg-green-50 hover:text-green-600 rounded-xl transition-all duration-200"
-                  onClick={() => setCategoriesOpen(!categoriesOpen)}
-                >
-                  <div className="flex items-center space-x-3">
-                    <span className="text-lg">📂</span>
-                    <span className="font-medium">Categories</span>
-                  </div>
-                  <FaChevronDown className={`text-sm transition-transform duration-200 ${
-                    categoriesOpen ? 'rotate-180' : ''
-                  }`} />
-                </button>
-                
-                <div className={`pl-4 space-y-1 overflow-hidden transition-all duration-300 ${
-                  categoriesOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'
-                }`}>
-                  {categories.map((category) => (
-                    <button
-                      key={category.path}
-                      onClick={() => {
-                        handleNavigation(category.path);
-                        setMenuOpen(false);
-                      }}
-                      className="flex items-center space-x-3 p-2 text-gray-600 hover:bg-green-50 hover:text-green-600 rounded-lg transition-all duration-200 w-full text-left"
-                    >
-                      <span>{category.emoji}</span>
-                      <span className="text-sm font-medium">{category.name}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </nav>
-
-            <div className="pt-4 border-t border-gray-100">
-              {user ? (
-                <div className="space-y-3">
-                  <div className="flex items-center space-x-3 p-3 bg-green-50 rounded-xl">
-                    <FaUser className="text-green-600" />
-                    <span className="font-medium text-green-700">
-                      {user.fullName || user.name || user.username || user.email}
-                    </span>
-                  </div>
-                  <button 
-                    onClick={logoutOnClick}
-                    className="w-full p-3 text-red-600 hover:bg-red-50 rounded-xl transition-all duration-200 font-medium"
-                  >
-                    Logout
-                  </button>
-                </div>
-              ) : (
-                <button 
-                  onClick={loginOnClick}
-                  className="w-full p-3 bg-green-600 text-white font-medium rounded-xl hover:bg-green-700 transition-all duration-200"
-                >
-                  Login
-                </button>
-              )}
-            </div>
-          </div>
+{menuOpen && (
+  <div className="mobile-menu lg:hidden bg-white shadow-md border-t border-gray-100 px-4 py-4 space-y-3 z-40 relative">
+    <button
+      onClick={() => handleNavigation('/')}
+      className="block w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600"
+    >
+      Home
+    </button>
+    <button
+      onClick={() => handleNavigation('/about')}
+      className="block w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600"
+    >
+      About
+    </button>
+    <button
+      onClick={() => handleNavigation('/locations')}
+      className="block w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600"
+    >
+      Locations
+    </button>
+    <div>
+      <button
+        onClick={() => setCategoriesOpen(!categoriesOpen)}
+        className="w-full text-left flex items-center justify-between px-4 py-2 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600"
+      >
+        <span>Categories</span>
+        <FaChevronDown
+          className={`text-xs transition-transform duration-200 ${
+            categoriesOpen ? 'rotate-180' : ''
+          }`}
+        />
+      </button>
+      {categoriesOpen && (
+        <div className="mt-2 space-y-2 pl-4">
+          {categories.map((category) => (
+            <button
+              key={category.path}
+              onClick={() => {
+                handleNavigation(category.path);
+                setMenuOpen(false);
+              }}
+              className="block w-full text-left px-4 py-2 rounded-lg text-gray-700 hover:bg-green-50 hover:text-green-600"
+            >
+              {category.name}
+            </button>
+          ))}
         </div>
+      )}
+    </div>
+    {user ? (
+      <div className="pt-2 border-t border-gray-100">
+        <div className="flex items-center space-x-2 px-4">
+          <FaUser className="text-gray-400" />
+          <span className="text-sm font-medium text-gray-700">
+            {user.fullName || user.name || user.username}
+          </span>
+        </div>
+        <button
+          onClick={logoutOnClick}
+          className="mt-2 block w-full text-left px-4 py-2 text-red-600 hover:bg-red-50 hover:text-red-700 rounded-lg"
+        >
+          Logout
+        </button>
+      </div>
+    ) : (
+      <button
+        onClick={loginOnClick}
+        className="mt-2 block w-full text-left px-4 py-2 bg-teal-800 text-white rounded-lg hover:bg-teal-700"
+      >
+        Login
+      </button>
+    )}
+  </div>
+)}
 
-       
-        {menuOpen && (
-          <div 
-            className="lg:hidden fixed inset-0 bg-black/20 backdrop-blur-sm z-[-1]"
-            onClick={() => setMenuOpen(false)}
-          />
-        )}
+      
       </header>
 
-        <div className=" py-1 mt-16 lg:mt-20">
-          <div className="animate-marquee whitespace-nowrap">
-            <span className="text-sm- font-medium text-black">
-              <marquee behavior="" direction="">  📞 +91 9874563210 • ✉️ masskar@gmail.com • 🚚 Free delivery on orders above QR 20</marquee>
-            
-            </span>
-          </div>
+      <div className="py-1 mt-16 lg:mt-20">
+        <div className="animate-marquee whitespace-nowrap">
+          <span className="text-sm font-medium text-black">
+            <marquee behavior="" direction="">📞 +91 9874563210 • ✉️ masskar@gmail.com • 🚚 Free delivery on orders above QR 20</marquee>
+          </span>
         </div>
-
-
+      </div>
     </>
   );
 };

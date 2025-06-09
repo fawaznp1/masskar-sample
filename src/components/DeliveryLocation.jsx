@@ -22,9 +22,10 @@ const DeliveryLocations = () => {
   );
 
   return (
-    <section id="delivery-locations" className="bg-gray-50 mt-10 py-12 px-6 md:px-12 lg:px-20">
+    <section id="delivery-locations" className="bg-gray-50 mt-1 py-12 px-6 md:px-12 lg:px-20">
+       <img src="https://masskaronline.com/uploads/images/banner/Masskar%20All%20Items-1.jpg" style={{width:'82%',display:'block',margin:'0 auto'}} alt="all item image" />
       <div className="max-w-5xl mx-auto">
-        <h2 className="text-3xl font-bold text-gray-800 mb-6">Delivery Locations</h2>
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 mt-2">Delivery Locations</h2>
         <div className="flex mb-4">
           <input
             type="text"
@@ -42,6 +43,7 @@ const DeliveryLocations = () => {
           ))}
         </div>
       </div>
+     
     </section>
   );
 };

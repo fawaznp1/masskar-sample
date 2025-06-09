@@ -1,8 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { ShoppingCart, User, LogOut, Package, CreditCard, Clock, MapPin, Trash2 } from 'lucide-react';
 
+type CleaningMethod = 'Trimmed' | 'Bone-in' | 'Boneless' | 'Chopped';
+
+type ProductData = {
+  id: number;
+  name: string;
+  image: string;
+  pricePerKg: number;
+  minWeight: number;
+  description: string;
+  cleaningOptions: CleaningMethod[];
+  type: 'fish' | 'meat'; 
+};
+
+type CartItem = {
+  id: string;
+  product: ProductData;
+  quantity: number;
+  weight: number;
+  cleaningMethod: CleaningMethod;
+  totalPrice: number;
+  createdAt: string;
+};
+
 const Cart: React.FC = () => {
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [user, setUser] = useState<any>(null);
   const [paymentMethod, setPaymentMethod] = useState('COD');
   const [deliveryAddress, setDeliveryAddress] = useState('');
@@ -20,17 +43,25 @@ const Cart: React.FC = () => {
       if (storedCart) {
         const items = JSON.parse(storedCart);
 
-        const mergedItems: any[] = [];
+        const mergedItems: CartItem[] = [];
         items.forEach((newItem: any) => {
+          const product = newItem.product || newItem.fish || newItem.meat;
+          const cleaningMethod = newItem.cleaningMethod;
+          
           const existingIndex = mergedItems.findIndex(
             (i) =>
-              i.fish.id === newItem.fish.id &&
-              i.cleaningMethod === newItem.cleaningMethod
+              i.product.id === product.id &&
+              i.cleaningMethod === cleaningMethod
           );
+          
           if (existingIndex > -1) {
             mergedItems[existingIndex].quantity += newItem.quantity;
           } else {
-            mergedItems.push({ ...newItem });
+            mergedItems.push({ 
+              ...newItem,
+              product,
+              id: newItem.id || `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+            });
           }
         });
 
@@ -50,7 +81,7 @@ const Cart: React.FC = () => {
     window.location.href = '/login';
   };
 
-  const removeItem = (id: number) => {
+  const removeItem = (id: string) => {
     if (!user) return;
     const updatedCart = cartItems.filter(item => item.id !== id);
     setCartItems(updatedCart);
@@ -59,7 +90,7 @@ const Cart: React.FC = () => {
 
   const calculateSubtotal = () =>
     cartItems.reduce((total, item) =>
-      total + (item.fish.pricePerKg * item.fish.minWeight * item.quantity), 0);
+      total + (item.product.pricePerKg * item.product.minWeight * item.quantity), 0);
 
   const deliveryCharge = 3;
   const subtotal = calculateSubtotal();
@@ -113,9 +144,9 @@ const Cart: React.FC = () => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 py-6">
       <div className="max-w-3xl mx-auto">
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6 flex justify-between items-center">
+        <div className="bg-white rounded-xl shadow-md p-3 mb-6 flex justify-between items-center">
           <div className="flex items-center space-x-3">
             <div className="w-10 h-10 bg-teal-700 rounded-full flex items-center justify-center text-white">
               {user?.fullName?.charAt(0)}
@@ -127,7 +158,7 @@ const Cart: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-white rounded-xl shadow-md p-4 mb-6">
+        <div className="bg-white rounded-xl shadow-md p-3 mb-6">
           <h2 className="text-lg mb-4 flex items-center gap-2">
             <ShoppingCart size={20} /> Your Cart ({cartItems.length} items)
           </h2>
@@ -137,15 +168,15 @@ const Cart: React.FC = () => {
               <div key={item.id} className="border-b pb-4 last:border-0">
                 <div className="flex justify-between">
                   <div>
-                    <h3 className="">{item.fish.name}</h3>
+                    <h3 className="">{item.product.name}</h3>
                     <p className='text-sm'>Cleaning: {item.cleaningMethod || 'Not specified'}</p>
                     <p className="text-sm text-gray-600">
-                      {item.quantity} x {item.fish.minWeight} kg
+                      {item.quantity} x {item.product.minWeight} kg
                     </p>
                   </div>
                   <div className="text-right">
                     <p className="">
-                      {(item.fish.pricePerKg * item.fish.minWeight * item.quantity).toFixed(2)} QR
+                      {(item.product.pricePerKg * item.product.minWeight * item.quantity).toFixed(2)} QR
                     </p>
                     <button
                       onClick={() => removeItem(item.id)}
@@ -241,16 +272,28 @@ export default Cart;
 export const addToCart = (newItem: any) => {
   const storedCart = JSON.parse(localStorage.getItem('cartItems') || '[]');
 
+  // Handle both old and new item structures
+  const product = newItem.product || newItem.fish || newItem.meat;
+  const cleaningMethod = newItem.cleaningMethod;
+
   const existingIndex = storedCart.findIndex(
     (item: any) =>
-      item.fish.id === newItem.fish.id &&
-      item.cleaningMethod === newItem.cleaningMethod
+      (item.product?.id || item.fish?.id || item.meat?.id) === product.id &&
+      item.cleaningMethod === cleaningMethod
   );
 
   if (existingIndex > -1) {
     storedCart[existingIndex].quantity += newItem.quantity;
   } else {
-    storedCart.push(newItem);
+    // Create a properly structured cart item
+    storedCart.push({
+      ...newItem,
+      id: newItem.id || `${product.id}_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      product, // Ensure product field exists
+      weight: product.minWeight * newItem.quantity,
+      totalPrice: product.pricePerKg * product.minWeight * newItem.quantity,
+      createdAt: new Date().toISOString()
+    });
   }
 
   localStorage.setItem('cartItems', JSON.stringify(storedCart));
